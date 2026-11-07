@@ -124,7 +124,8 @@ Chữ trong các box và ô bảng được căn giữa ngang/dọc.
 Các hình trong báo cáo có bản PDF vector và SVG tại `figures/`; LaTeX nhúng
 PDF, còn slide dùng PNG chất lượng cao. `FIGURE_PROVENANCE.json` phân biệt
 sơ đồ minh họa với hình thực và bảng số đo. Mã dựng hình: `scripts/paper_figures.py`.
-Video H.264/yuv420p 1080p, 45 giây, phát lại 20 FPS, không âm thanh, có chú thích Việt;
+Video gốc H.264/yuv420p 1080p; bản trong `12.zip` được nén xuống 720p để đáp ứng
+giới hạn dung lượng. Cả hai dài 45 giây, phát lại 20 FPS, không âm thanh, có chú thích Việt;
 không có đoạn giới thiệu, outro hoặc dừng hình.
 Đó là video trực quan từ suy luận thật, không phải quay màn hình hoặc nhãn GT.
 
