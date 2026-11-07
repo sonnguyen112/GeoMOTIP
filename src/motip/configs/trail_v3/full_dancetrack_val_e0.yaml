@@ -1,0 +1,10 @@
+# Full official DanceTrack validation evaluation for the best E0 checkpoint.
+# Inherit the resolved E0 run config, but remove the representative-subset filter.
+SUPER_CONFIG_PATH: ./outputs/research_v3/larger_dancetrack_subset/e0/train/config.yaml
+INFERENCE_SEQUENCE_MANIFEST: null
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_DTYPE: FP32
+OUTPUTS_DIR: ./outputs/research_v3/larger_dancetrack_subset/full_dancetrack_val/e0_best_epoch8
+EXP_NAME: larger_subset_e0_best_epoch8_full_dancetrack_val

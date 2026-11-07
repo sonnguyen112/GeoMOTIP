@@ -1,0 +1,7 @@
+# Same validated 10% protocol; only the experiment seed and artifact paths change.
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct10_new_e0.yaml
+SEED: 123
+INFERENCE_SEQUENCE_MANIFEST: outputs/research_data_efficiency/percent_5_10_15_multiseed/small_validation.txt
+INIT_CHECKPOINT: outputs/research_data_efficiency/percent_5_10_15_multiseed/initialization/s123/common_init.pth
+OUTPUTS_DIR: outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p10/s123/e0
+EXP_NAME: data_efficiency_pct10_e0_s123

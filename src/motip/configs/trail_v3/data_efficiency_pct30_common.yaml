@@ -1,0 +1,5 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/detector_only_gtstats_common.yaml
+TRAIN_SEQUENCE_MANIFEST: outputs/research_data_efficiency/percent_10_20_30_s42/train_30pct.txt
+INFERENCE_SEQUENCE_MANIFEST: outputs/research_data_efficiency/percent_10_20_30_s42/full_dancetrack_val.txt
+GEOMETRY_INPUT_STATS_PATH: outputs/research_data_efficiency/percent_10_20_30_s42/g4_gt_only_stats_30pct.pt
+

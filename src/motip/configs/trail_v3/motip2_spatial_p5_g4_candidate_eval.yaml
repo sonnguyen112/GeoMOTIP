@@ -1,0 +1,16 @@
+# Post-hoc inference only. Run after the SP+G4 pilot releases the local GPU.
+# This enables candidate-masked calibration diagnostics and branch-logit cache
+# without changing model weights, predictions, or training configuration.
+SUPER_CONFIG_PATH: ./configs/trail_v3/motip2_spatial_p5_g4_lag_compatible_pilot.yaml
+
+GEOMETRY_CANDIDATE_DIAGNOSTICS: true
+SAVE_BRANCH_LOGITS: true
+INFERENCE_MODE: evaluate
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_GROUP: sp_g4_candidate_diag
+INFERENCE_MODEL: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp_g4_lag_compatible/checkpoint_2.pth
+INFERENCE_DTYPE: FP32
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp_g4_lag_compatible/candidate_eval
+EXP_NAME: motip2_spatial_p5_g4_candidate_eval_s42
+USE_WANDB: false

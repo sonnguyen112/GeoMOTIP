@@ -1,0 +1,11 @@
+# Trail-MOTIP V0: clean ablation config.
+# Inherits all original DanceTrack MOTIP settings and changes only the trail branch.
+SUPER_CONFIG_PATH: ./configs/r50_deformable_detr_motip_dancetrack.yaml
+
+TRAIL_ENABLED: True
+TRAIL_GRID_H: 12
+TRAIL_GRID_W: 20
+TRAIL_ALPHA: 0.8
+TRAIL_ENCODER_HIDDEN_DIM: 128
+TRAIL_RASTER_SHARPNESS: 80.0
+TRAIL_FUSION_SCALE: 1.0

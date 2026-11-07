@@ -1,0 +1,8 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/motip2_spatial_p5_g4_pilot.yaml
+
+# Separate follow-up only; this config is not part of the running pilot.
+# Keep the existing 66D G4 features/lags and restrict sampled clip strides
+# to values that can expose at least one exact requested lag.
+SAMPLE_INTERVAL_CHOICES: [[1, 2, 4]]
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp_g4_lag_compatible
+EXP_NAME: motip2_spatial_p5_g4_lag_compatible_pilot_s42

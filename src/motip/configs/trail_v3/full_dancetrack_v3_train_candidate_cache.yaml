@@ -1,0 +1,19 @@
+# Inference-only training-split cache for fitting a history-aware correction rule.
+# Uses the completed epoch-6 full-data V3 checkpoint; no weights are updated.
+SUPER_CONFIG_PATH: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/v3.yaml
+DATA_ROOT: ./datasets
+DETR_PRETRAIN: ./pretrains/r50_deformable_detr_coco_dancetrack.pth
+GEOMETRY_INPUT_STATS_PATH: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/geometry_pretrain/probe/geometry_probe_models.pt
+INFERENCE_SEQUENCE_MANIFEST: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/train_manifest.txt
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: train
+INFERENCE_MODE: submit
+INFERENCE_MODEL: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/train/checkpoint_6.pth
+INFERENCE_DTYPE: FP32
+GEOMETRY_CANDIDATE_DIAGNOSTICS: true
+SAVE_BRANCH_LOGITS: true
+BRANCH_LOGITS_DIR: ./outputs/research_v5/full_v3_epoch6_candidate_train_eval/branch_logits
+OUTPUTS_DIR: ./outputs/research_v5/full_v3_epoch6_candidate_train_eval
+EXP_NAME: full_v3_epoch6_candidate_train_cache
+INFERENCE_GROUP: full_v3_epoch6_candidate_train_cache
+USE_WANDB: false

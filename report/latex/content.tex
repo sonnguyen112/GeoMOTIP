@@ -1,0 +1,542 @@
+\begin{abstract}
+Theo dõi đa đối tượng đòi hỏi duy trì nhất quán danh tính qua nhiều khung hình, đặc biệt khi các đối tượng có ngoại hình tương tự, giao cắt hoặc bị che khuất. Bài báo này tái hiện phương pháp Multiple Object Tracking as ID Prediction (MOTIP) dựa trên mã nguồn của tác giả, đồng thời đánh giá một nhánh liên kết hình học tường minh. Nhánh bổ sung sử dụng hộp giới hạn của từng ứng viên tại các độ trễ 1, 2, 4 và 8 khung hình để tạo mô tả 66 chiều, sau đó dự đoán điểm tương thích bằng một MLP gồm 25.217 tham số. Điểm hình học được hợp nhất với logit dự đoán ID của MOTIP, trong khi detector được giữ cố định. Thực nghiệm sử dụng các subset lồng nhau chiếm xấp xỉ 5\%, 10\% và 15\% tập huấn luyện DanceTrack, tương ứng 2.090, 4.179 và 6.265 khung hình. Mỗi cấu hình được huấn luyện 10 epoch với ba seed và đánh giá trên toàn bộ 25.508 khung hình validation. Nhánh hình học cải thiện AssA trung bình lần lượt 7.358, 8.821 và 7.525 điểm, với ID switch giảm trong cả chín cặp seed/ngân sách. Kết quả cho thấy hình học đa độ trễ bổ sung một tín hiệu liên kết hữu ích trong các điều kiện được khảo sát. Phạm vi kết luận là học liên kết với detector tiền huấn luyện cố định; thực nghiệm không thay thế đánh giá trên test ẩn hay tái lập toàn bộ chế độ huấn luyện end-to-end của paper gốc.
+
+\end{abstract}
+\textbf{Từ khóa:} theo dõi đa đối tượng; MOTIP; dự đoán ID; hình học quỹ đạo; DanceTrack.
+\FloatBarrier
+\section{Giới thiệu}
+Một detector có thể xác định đúng vị trí nhiều người trong từng khung hình nhưng vẫn không biết người ở khung hình hiện tại tương ứng với ai trong quá khứ. Sai lầm này tạo ra ID switch, chia nhỏ quỹ đạo và làm mất tính liên tục của thông tin theo dõi. Trong DanceTrack, nhiều người mặc trang phục giống nhau và di chuyển theo các mẫu phức tạp, khiến đặc trưng ngoại hình riêng lẻ không phải lúc nào cũng đủ phân biệt \cite{dancetrack}.
+
+MOTIP đặt bài toán liên kết dưới dạng dự đoán ID theo ngữ cảnh \cite{motip}. Thay vì chỉ tạo đặc trưng rồi thiết kế một khoảng cách ghép cặp riêng, mô hình tiếp nhận lịch sử đối tượng đã mang ID và trực tiếp dự đoán nhãn ID cho phát hiện hiện tại. Các ID này là ký hiệu cục bộ trong bộ nhớ của tracker, không phải tên người hay lớp nhận dạng danh tính cố định trên toàn bộ dữ liệu. Cách biểu diễn này cho phép học quy tắc liên kết từ các chuỗi đã gán nhãn.
+
+Bài báo tập trung vào câu hỏi: khi lượng dữ liệu huấn luyện nhánh liên kết còn hạn chế, bổ sung trực tiếp quan hệ chuyển động giữa phát hiện hiện tại và lịch sử ứng viên có cải thiện chất lượng theo dõi hay không? Chúng tôi khảo sát một nhánh hình học nhỏ để bổ sung điểm tương thích giữa phát hiện hiện tại và track ứng viên, trong khi giữ nguyên ID Decoder. Mục đích là kiểm tra lợi ích thực nghiệm của biểu diễn tường minh, không khẳng định rằng mô hình nền không thể tự học các quan hệ này khi có đủ dữ liệu.
+
+Nội dung thực hiện gồm ba phần: tái hiện pipeline huấn luyện và suy luận của MOTIP từ mã nguồn được công bố; triển khai nhánh hình học đa độ trễ và tích hợp ở mức logit; đối chiếu hai cấu hình trên các ngân sách dữ liệu lồng nhau với ba seed. Phần mô hình nền được ghi nhận là công trình của Gao và cộng sự \cite{motip}. Phần đóng góp của đồ án nằm ở tích hợp, kiểm chứng và phân tích nhánh hình học trong thiết lập thực nghiệm cụ thể.
+
+\FloatBarrier
+\section{Công trình liên quan}
+\FloatBarrier
+\subsection{Phát hiện và liên kết trong MOT}
+Tracking-by-detection tách việc tìm đối tượng trong từng ảnh khỏi việc duy trì danh tính theo thời gian. Hai bước có liên hệ nhưng đo lường những loại sai số khác nhau: một đối tượng có thể được phát hiện chính xác mà vẫn được gán ID sai. Vì vậy, chất lượng detector không đủ để mô tả toàn bộ chất lượng tracker. Deformable DETR \cite{deformable} là thành phần phát hiện của cấu hình được sử dụng, cung cấp đồng thời hộp giới hạn, độ tin cậy và đặc trưng truy vấn đối tượng.
+
+\FloatBarrier
+\subsection{Liên kết bằng dự đoán ID}
+MOTIP \cite{motip} coi lịch sử có nhãn ID là ngữ cảnh để suy luận ID của các phát hiện mới. Công trình gốc khảo sát DanceTrack, SportsMOT và BFT; bộ dữ liệu và cấu hình của tác giả còn bao gồm CrowdHuman cho phần chuẩn bị phát hiện \cite{motipcode}. Trong bài báo này, DanceTrack là dữ liệu thực nghiệm duy nhất.
+
+\FloatBarrier
+\subsection{Đánh giá chất lượng liên kết}
+HOTA phân rã chất lượng theo dõi thành phát hiện và liên kết, giúp tránh đánh giá một tracker chỉ qua số lượng phát hiện đúng \cite{hota}. Bài báo sử dụng TrackEval \cite{trackeval} để tính HOTA, DetA, AssA, IDF1 và IDSW. Không xem số ID switch là đại diện duy nhất cho chất lượng quỹ đạo, bởi mất dấu hoặc tạo các quỹ đạo ngắn cũng có thể làm thay đổi chỉ số này.
+
+\FloatBarrier
+\section{Tái hiện thuật toán MOTIP}
+\FloatBarrier
+\subsection{Đầu vào, đầu ra và ký hiệu}
+Tại thời điểm $t$, đầu vào là ảnh $I_t$ và trạng thái lịch sử của tracker.
+Detector tạo $N_t$ phát hiện. Với phát hiện thứ $n$, ký hiệu hộp, độ tin cậy và
+đặc trưng lần lượt là
+\begin{equation}
+ \mathbf b_{t,n}=\begin{bmatrix}c_{x,t,n}&c_{y,t,n}&w_{t,n}&h_{t,n}\end{bmatrix}^{\mathsf T}
+ \in\mathbb R^4,\qquad q_{t,n}\in[0,1],\qquad \mathbf f_{t,n}\in\mathbb R^{256}.
+ \label{eq:detection}
+\end{equation}
+Hộp được chuẩn hóa theo kích thước ảnh. Đầu ra cuối cùng là tập hộp và ID toàn
+cục dùng để nối các quan sát thành quỹ đạo.
+
+Tracker duy trì một từ vựng 50 ID slot và một lớp NEW trong cấu hình được đánh giá. ID slot là vị trí cục bộ có thể được tái sử dụng, còn ID toàn cục là số định danh xuất ra cho quỹ đạo. Tái sử dụng slot sau khi track kết thúc không được phép làm một quỹ đạo mới thừa kế lịch sử hay chủ sở hữu của quỹ đạo cũ. Đây là vấn đề quản lý trạng thái, không phải một nhãn người cố định của dataset.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/pipeline.pdf}
+\caption{Pipeline MOTIP nền được tái hiện: query hiện tại truy vấn ngữ cảnh lịch sử đã có ID, sau đó tracker gán slot và cập nhật bộ nhớ. Các ô màu chỉ minh họa cấu trúc token, không phải attention map đo được. Detector đóng băng là chính sách của thực nghiệm này. Nhánh geometry bổ sung được trình bày riêng ở Hình 3.}\label{fig:1}
+\end{figure}
+
+\FloatBarrier
+\subsection{Detector và mô hình hóa lịch sử}
+Deformable DETR sinh hộp và đặc trưng đối tượng từ ảnh. Những phát hiện không đạt ngưỡng confidence hoặc diện tích bị loại trước bước liên kết. Trong các thực nghiệm của bài báo, trọng số detector được nạp từ checkpoint đã tiền huấn luyện và sau đó đóng băng; các tham số phát hiện không được cập nhật khi huấn luyện nhánh ID.
+
+Đặc trưng của các quan sát trước đó được lưu theo thời gian, theo track và kèm mask cho vị trí không hợp lệ. Module trajectory modeling gồm các phép biến đổi feed-forward có kết nối residual và LayerNorm để thích nghi đặc trưng detector cho bài toán liên kết. Module này không tự nó là bộ dự đoán vị trí chuyển động.
+
+Các tensor lịch sử được tổ chức theo batch, nhóm tăng cường, thời gian và track:
+\begin{equation}
+ \begin{aligned}
+  \mathbf F_{\mathrm{hist}}&\in\mathbb R^{B\times G\times T\times K\times256},\\
+  \mathbf B_{\mathrm{hist}}&\in\mathbb R^{B\times G\times T\times K\times4},\\
+  \mathbf Y_{\mathrm{hist}},\ \mathbf M_{\mathrm{hist}}
+   &\text{ có kích thước }B\times G\times T\times K.
+ \end{aligned}
+ \label{eq:history-tensors}
+\end{equation}
+Trong đó $B$ là batch, $G$ là nhóm tăng cường quỹ đạo, $T$ là số bước thời gian
+và $K$ là số track tối đa sau padding. Số track thực tế có thể ít hơn $K$;
+các phần tử padding không được tham gia attention hay loss. Không diễn giải
+các chiều này thành số video hay số người cố định trên toàn tập dữ liệu.
+
+\FloatBarrier
+\subsection{ID embedding và ID Decoder}
+Mỗi slot có một ID embedding học được. Với một quan sát lịch sử, đặc trưng đối tượng được ghép nối với embedding của slot đã gán. Với phát hiện hiện tại chưa biết ID, phần embedding được thay bằng một embedding rỗng học được. Trong cấu hình này, hai thành phần 256 chiều được nối thành token 512 chiều.
+
+ID Decoder sử dụng các lớp attention để các phát hiện hiện tại khai thác quan hệ trong cùng frame và truy vấn lịch sử có ID. Cross-attention dùng lịch sử làm key/value; mask nhân quả không cho phép dùng quan sát từ thời điểm hiện tại hoặc tương lai để dự đoán chính thời điểm đó. Thông tin thời gian tương đối giúp phân biệt một quan sát gần với một quan sát xa. Đầu phân loại sau decoder tạo logit cho các slot và NEW.
+
+Ở mức một attention head, phép truy vấn ngữ cảnh được viết dưới dạng
+\begin{equation}
+ \begin{aligned}
+  \mathbf A&=\operatorname{softmax}\!\left(
+  \frac{\mathbf Q\mathbf K^{\mathsf T}}{\sqrt{d_h}}
+   +\mathbf M+\mathbf B_{\mathrm{time}}\right),\\
+  \operatorname{Attention}(\mathbf Q,\mathbf K,\mathbf V)&=\mathbf A\mathbf V.
+ \end{aligned}
+ \label{eq:attention}
+\end{equation}
+$\mathbf Q$ được chiếu từ các token đang cần dự đoán; $\mathbf K$ và
+$\mathbf V$ được chiếu từ ngữ cảnh; $d_h$ là số chiều của head.
+$\mathbf M$ chặn phần tử padding và các quan hệ thời gian không hợp lệ,
+còn $\mathbf B_{\mathrm{time}}$ là thiên lệch thời gian tương đối học được.
+Trong self-attention, query, key và value cùng lấy từ tập phát hiện hiện tại;
+trong cross-attention, key và value lấy từ lịch sử. Các head được kết hợp rồi
+đi qua biến đổi feed-forward với residual và normalization. Cấu hình dùng sáu
+lớp decoder; mã nguồn bỏ self-attention ở lớp đầu, nên sơ đồ attention được
+hiểu ở mức chức năng chứ không giả định mọi lớp hoàn toàn giống nhau.
+
+Có thể viết khái quát đường dự đoán ID như sau:
+\begin{equation}
+ \mathbf z_t=\operatorname{Decoder}(\mathbf U_t,\mathcal H_{<t},\mathbf M),
+ \qquad \boldsymbol\ell_B=\operatorname{IDHead}(\mathbf z_t).
+ \label{eq:id-decoder}
+\end{equation}
+$\mathbf U_t$ là tập query hiện tại và $\mathcal H_{<t}$ là lịch sử trước thời
+điểm $t$. Xác suất ID được suy ra từ softmax trên logit. Cách viết này mô tả
+chức năng của pipeline; số lớp, kích thước và mask được lấy từ cấu hình/mã
+nguồn đi kèm. Đây không phải bộ phân loại danh tính người trên toàn dataset.
+
+\FloatBarrier
+\subsection{Huấn luyện nhánh liên kết}
+Từ một clip đã có nhãn quỹ đạo, các quan sát được ghép với đối tượng ground truth để xây dựng lịch sử và mục tiêu ID cục bộ. Việc hoán vị ID slot giữa các mẫu ngăn mô hình học rằng một người cụ thể luôn mang một số ID cụ thể. Tăng cường quỹ đạo mô phỏng thiếu quan sát và nhầm lẫn lịch sử, giúp thu hẹp phần nào chênh lệch giữa lịch sử sạch khi huấn luyện và lịch sử do tracker tự sinh khi suy luận.
+
+Với mô hình nền, loss liên kết là cross-entropy trên tập query hợp lệ $\Omega$:
+\begin{equation}
+ \mathcal L_{\mathrm{ID}}=
+ -\frac{1}{|\Omega|}\sum_{u\in\Omega}
+ \log\left[\operatorname{softmax}(\boldsymbol\ell_{B,u})\right]_{y_u}.
+ \label{eq:baseline-loss}
+\end{equation}
+$y_u$ là ID slot mục tiêu của query $u$. Frame đầu chủ yếu thiết lập ngữ cảnh;
+những vị trí bị mask không được tính vào loss. Các tham số trajectory modeling,
+ID Decoder và ID embedding được cập nhật, còn detector giữ nguyên. Đây là
+thiết lập huấn luyện nhánh liên kết được chọn cho đồ án, khác với việc huấn luyện
+toàn bộ hệ thống end-to-end trong mọi thí nghiệm của paper gốc.
+
+\FloatBarrier
+\subsection{Suy luận trực tuyến và vòng phản hồi}
+Ở frame đầu, chưa có lịch sử nên các phát hiện đủ điều kiện được khởi tạo thành track mới. Với các frame sau, tracker tạo logit từ lịch sử đã lưu, thực hiện quy tắc gán ID và xử lý xung đột để tránh nhiều phát hiện cùng giữ một slot trong một frame. Cấu hình thực nghiệm sử dụng object-max với ngưỡng ID 0,2, ngưỡng phát hiện 0,3 và ngưỡng newborn 0,6.
+
+Sau khi quyết định ID, tracker xuất hộp và ID, rồi mới ghi đặc trưng/hộp vào lịch sử cho frame tiếp theo. Track thiếu quan sát được giữ trong cửa sổ cho phép; các track không còn lịch sử hợp lệ được loại khỏi tập ứng viên. Lỗi ID có thể đi vào bộ nhớ và ảnh hưởng các quyết định sau. Vì vậy, accuracy trên các cặp ứng viên ngoại tuyến không tự bảo đảm HOTA hay AssA của tracker đóng vòng.
+
+\FloatBarrier
+\section{Bổ sung hình học quỹ đạo đa độ trễ}
+\FloatBarrier
+\subsection{Biểu diễn G4 theo từng cặp ứng viên}
+Với phát hiện $n$ và track ứng viên $k$, chúng tôi truy xuất hộp tại đúng các
+thời điểm $t-\Delta$, với
+\begin{equation}
+ \mathcal D=\{1,2,4,8\},\qquad
+ m_{\Delta}^{k}=\begin{cases}
+  1,&\text{có quan sát của track }k\text{ tại đúng }t-\Delta,\\
+  0,&\text{ngược lại.}
+ \end{cases}
+ \label{eq:exact-lags}
+\end{equation}
+Một vị trí thứ tư trong danh sách quan sát không nhất thiết là hộp ở $t-4$:
+khi bị che khuất, thời điểm quan sát và chỉ số phần tử không trùng nhau.
+Nếu một lag bị thiếu, khối đặc trưng tương ứng được điền giá trị trung tính
+và đánh dấu validity bằng $0$; không thay bằng quan sát gần nhất.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/multilag.pdf}
+\caption{Ví dụ minh họa truy xuất đúng timestamp. Quan sát thiếu không được diễn giải thành chuyển động bằng 0. Các số ID và vị trí trong sơ đồ chỉ là minh họa, không phải kết quả đo.}\label{fig:2}
+\end{figure}
+
+Biểu diễn G4 gồm 66 chiều. Hộp hiện tại đóng góp 4 chiều; bốn hộp quá khứ đóng góp 16 chiều; validity của bốn lag đóng góp 4 chiều. Các nhóm còn lại mô tả vận tốc, phần dư ngoại suy, biến thiên vận tốc, độ dời tương đối, thay đổi kích thước và mã lag. Mọi đại lượng được xây dựng bằng một hàm dùng chung cho tiền huấn luyện và tracker để tránh sai khác định nghĩa.
+
+\begin{table}[!htbp]
+\centering
+\caption{Các nhóm đặc trưng trong biểu diễn G4.}\label{tab:1}
+
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{.64\linewidth}r}
+\toprule
+\textbf{Nhóm đặc trưng} & \textbf{Số chiều} \\
+\midrule
+Hộp hiện tại & 4 \\
+Bốn hộp lịch sử & 16 \\
+Validity từng lag & 4 \\
+3 vận tốc + phần dư ngoại suy (2D) & 8 \\
+Validity vận tốc/ngoại suy & 4 \\
+2 vector biến thiên vận tốc (2D) & 4 \\
+Validity biến thiên vận tốc & 2 \\
+Độ dời tương đối + log-scale mỗi lag & 16 \\
+Thay đổi log-diện tích mỗi lag & 4 \\
+Mã lag: $0,\frac{1}{3},\frac{2}{3},1$ & 4 \\
+Tổng & 66 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Để viết gọn, trong các công thức sau, hộp hiện tại của phát hiện $n$ có tâm
+$(c_{x,t},c_{y,t})$ và kích thước $(w_t,h_t)$; hộp lịch sử thuộc ứng viên $k$
+được ký hiệu bằng chỉ số $t-\Delta$. Độ dời và thay đổi tỷ lệ là
+\begin{equation}
+ \begin{aligned}
+ d_x^{\Delta}&=\frac{c_{x,t}-c_{x,t-\Delta}}{\max(w_t,\varepsilon)},&
+ d_y^{\Delta}&=\frac{c_{y,t}-c_{y,t-\Delta}}{\max(h_t,\varepsilon)},\\
+ d_w^{\Delta}&=\log\frac{w_t+\varepsilon}{w_{t-\Delta}+\varepsilon},&
+ d_h^{\Delta}&=\log\frac{h_t+\varepsilon}{h_{t-\Delta}+\varepsilon}.
+ \end{aligned}
+ \label{eq:relative-geometry}
+\end{equation}
+Trong triển khai, $\varepsilon=10^{-5}$ và độ dời được chuẩn hóa theo kích thước
+\emph{hộp hiện tại}. Các khối ứng với lag
+không hợp lệ được đặt bằng $0$ và đi kèm validity mask riêng.
+
+Đặt $\mathbf p_t=(c_{x,t},c_{y,t})^{\mathsf T}$ và
+$\mathbf s_t=(\max(w_t,\varepsilon),\max(h_t,\varepsilon))^{\mathsf T}$.
+Với $\oslash$ là phép chia từng thành phần, vận tốc chuẩn hóa và phần dư ngoại suy là
+\begin{equation}
+ \begin{aligned}
+ \mathbf v^{(a,b)}&=\frac{\mathbf p_{t-a}-\mathbf p_{t-b}}{b-a}\oslash\mathbf s_t,
+ & (a,b)&\in\{(1,2),(2,4),(4,8)\},\\
+ \mathbf r_v&=(\mathbf p_t-\mathbf p_{t-1})\oslash\mathbf s_t-\mathbf v^{(1,2)}.
+ \end{aligned}
+ \label{eq:velocity}
+\end{equation}
+Hai vector biến thiên vận tốc là $\mathbf v^{(1,2)}-\mathbf v^{(2,4)}$ và
+$\mathbf v^{(2,4)}-\mathbf v^{(4,8)}$. Các đặc trưng chuyển động được xây dựng
+trong hệ tọa độ ảnh và chỉ hợp lệ khi đủ các quan sát tương ứng.
+
+\FloatBarrier
+\subsection{Mạng tương thích và hợp nhất}
+Với vector G4 $\mathbf g_{nk}\in\mathbb R^{66}$, mean/std chỉ được tính từ
+dữ liệu train. Sau chuẩn hóa, MLP dự đoán một điểm cho từng cặp phát hiện--track:
+\begin{equation}
+ \begin{aligned}
+ \widetilde{\mathbf g}_{nk}&=\operatorname{Normalize}_{\mathrm{train}}(\mathbf g_{nk}),\\
+ \ell_{G,nk}&=\mathbf W_3\,\phi\!\left(
+       \mathbf W_2\,\phi(\mathbf W_1\widetilde{\mathbf g}_{nk}+\mathbf b_1)
+       +\mathbf b_2\right)+b_3,\\
+ \mathbf W_1&\in\mathbb R^{128\times66},\qquad
+ \mathbf W_2\in\mathbb R^{128\times128},\qquad
+ \mathbf W_3\in\mathbb R^{1\times128}.
+ \end{aligned}
+ \label{eq:geometry-mlp}
+\end{equation}
+Ở đây $\phi=\operatorname{GELU}$. Mạng có 25.217 tham số và không tạo một bộ
+nhãn danh tính riêng trên toàn dataset. Chi phí tính toán tăng theo số cặp
+phát hiện--track được chấm điểm.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/geometry_fusion.pdf}
+\caption{Nhánh hình học chấm trực tiếp từng cặp phát hiện–ứng viên và bổ sung điểm vào logit nền. Đường đi ở góc trái minh họa cấu trúc đa độ trễ, không phải quỹ đạo hay kết quả dự đoán được đo. Đóng góp geometry cho NEW bằng 0.}\label{fig:3}
+\end{figure}
+
+Với mỗi track ứng viên, điểm hình học được kết hợp với logit mà MOTIP dự đoán
+cho cùng track. Công thức hợp nhất là
+\begin{equation}
+ \ell_{\mathrm{final},nk}=\frac{\ell_{B,nk}}{T_b}
+                      +\lambda\frac{\ell_{G,nk}}{T_g},
+ \qquad T_b=2,\quad T_g=0{,}5,\quad\lambda=1.
+ \label{eq:fusion}
+\end{equation}
+Hình học chỉ chấm track hiện hữu có lịch sử hợp lệ; đóng góp của nó cho lớp
+mới bằng không:
+\begin{equation}
+ \ell_{G,n,\mathrm{NEW}}=0,\qquad
+ \ell_{\mathrm{final},n,\mathrm{NEW}}=\frac{\ell_{B,n,\mathrm{NEW}}}{T_b}.
+ \label{eq:new}
+\end{equation}
+Các giá trị được giữ cố định, không hiệu chỉnh riêng theo seed hoặc ngân sách
+sau khi xem kết quả validation. Khi tắt geometry, đường MOTIP nền được giữ
+nguyên; phép chia nhiệt độ của MOTIP + G4 không phải một phần mặc định của MOTIP nền.
+
+\FloatBarrier
+\subsection{Tiền huấn luyện và giám sát trực tiếp}
+MLP được tiền huấn luyện để chấm mức độ phù hợp giữa một phát hiện hiện tại và một track ứng viên. Mỗi mẫu gồm hộp hiện tại, các hộp lịch sử của ứng viên và một nhãn giám sát: nhãn 1 nếu hai phía thuộc cùng đối tượng, nhãn 0 nếu thuộc hai đối tượng khác nhau. Chẳng hạn, phát hiện của người A ghép với lịch sử người A là mẫu dương; ghép với lịch sử người B là mẫu âm. Mã ID chỉ dùng để xác định các nhãn này và nhóm quan sát thành lịch sử, không được đưa vào vector G4.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/geometry_pretraining.pdf}
+\caption{Hai giai đoạn tiền huấn luyện dùng cùng một MLP và khác nhau ở nguồn tọa độ hộp: GT–GT dùng hộp GT, còn GT-linked Pred–Pred dùng hộp detector được nối bằng ID của GT train. Khi suy luận, ID dự đoán quyết định cách cập nhật lịch sử. Các hộp và ký hiệu A/B là ví dụ minh họa, không phải kết quả đo.}\label{fig:4}
+\end{figure}
+
+\FloatBarrier
+\textbf{Giai đoạn 1 — GT–GT.} MLP được học trong 4 epoch với đặc trưng G4 tính từ tọa độ hộp ground truth (GT) của cả quan sát hiện tại lẫn lịch sử. Vì vị trí hộp và danh tính đều có nhãn, giai đoạn này giúp mạng học quan hệ hình học giữa các quan sát của cùng một đối tượng.
+
+\textbf{Giai đoạn 2 — GT-linked Pred–Pred.} Giữ lại trọng số vừa học, chúng tôi cho detector đóng băng dự đoán hộp trên các video train. Trong từng frame, hộp dự đoán được ghép một-một với hộp GT bằng Hungarian, chỉ chấp nhận cặp có IoU ít nhất 0,5. Sau phép ghép, hộp dự đoán nhận nhãn ID tương ứng để lưu vào lịch sử của đối tượng đó; tọa độ vẫn là tọa độ detector dự đoán, không được thay bằng tọa độ GT. Những hộp không ghép được bị loại khỏi dữ liệu tiền huấn luyện. MLP tiếp tục học 4 epoch từ G4 của hộp dự đoán hiện tại và lịch sử hộp dự đoán. Nhờ vậy, mạng được tiếp xúc với sai lệch định vị và các quan sát thiếu của detector, trong khi việc xác định hộp nào thuộc cùng đối tượng vẫn dựa vào nhãn train.
+
+Toàn bộ dữ liệu tiền huấn luyện và thống kê chuẩn hóa chỉ lấy từ các sequence train của từng ngân sách; validation không tham gia bước này. Quá trình tạo lịch sử tiền huấn luyện không gọi ID Decoder. Ngược lại, khi suy luận trên video mới, hệ thống không có nhãn GT: MOTIP kết hợp điểm hình học để dự đoán ID, rồi lưu hộp hiện tại theo ID vừa dự đoán. Vì thế, lịch sử khi suy luận có thể chứa lỗi gán ID, khác với lịch sử được nối theo nhãn GT lúc tiền huấn luyện. Ở cả hai trường hợp, G4 chỉ đọc các quan sát trước frame hiện tại.
+
+Cả hai giai đoạn dùng BCEWithLogits với trọng số lớp dương để bù mất cân bằng số cặp. Chỉ các mẫu có track đúng trong tập ứng viên được dùng để tiền huấn luyện. Khi tích hợp tracker, geometry có loss CE phụ trực tiếp trên các query có target là track hiện hữu và có lịch sử lag hợp lệ. NEW hoặc target không có lag phù hợp không bị ép học một điểm geometry giả.
+
+Hàm mất mát tổng gồm hai thành phần:
+\begin{equation}
+ \begin{aligned}
+ \mathcal L_{\mathrm{fused}}&=
+    \operatorname{CE}_{\Omega}(\boldsymbol\ell_{\mathrm{final}},\mathbf y),\\
+ \mathcal L_{\mathrm{geom}}&=
+    \operatorname{CE}_{\Omega_G}(\boldsymbol\ell_G,\mathbf y),\\
+ \mathcal L_{\mathrm{total}}&=\nu\mathcal L_{\mathrm{fused}}
+                    +\mu\mathcal L_{\mathrm{geom}},\qquad\mu=\nu=1.
+ \end{aligned}
+ \label{eq:v3-loss}
+\end{equation}
+$\operatorname{CE}_{\Omega}$ là cross-entropy trung bình trên query hợp lệ;
+$\Omega_G\subseteq\Omega$ chỉ giữ query có target là track hiện hữu và có
+lịch sử lag hợp lệ. ID-loss weight bằng $1$. Loss detector không tạo cập nhật
+do detector đóng băng. Loss ID được tính trên logit đã hợp nhất. Giám sát geometry trực tiếp
+giúp nhánh mới nhận gradient mà không chỉ phụ thuộc đường residual đã nhân
+hệ số hợp nhất.
+
+\FloatBarrier
+\section{Thiết kế thực nghiệm}
+\FloatBarrier
+\subsection{Dữ liệu và ngân sách huấn luyện}
+Tập DanceTrack trong workspace gồm 40 sequence train với 41.796 frame và 25 sequence validation với 25.508 frame. Chúng tôi sử dụng các tập con lồng nhau ở mức sequence, không lấy frame ngẫu nhiên rải rác trong video. Các tập con lần lượt có 3, 6 và 8 sequence. Metadata chiều dài, mật độ đối tượng và chuyển động được dùng để tăng độ đa dạng khi chọn subset; không dùng mức cải thiện MOTIP nền/MOTIP + G4 để chọn sequence.
+
+\begin{table}[!htbp]
+\centering
+\caption{Ngân sách dữ liệu huấn luyện và split đánh giá.}\label{tab:2}
+
+\small\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Ngân sách} & \textbf{Sequence train} & \textbf{Frame train} & \textbf{Số seed} & \textbf{Đánh giá} \\
+\midrule
+5\% & 3 & 2,090 & 3 & 25.508 / 25 sequence \\
+10\% & 6 & 4,179 & 3 & 25.508 / 25 sequence \\
+15\% & 8 & 6,265 & 3 & 25.508 / 25 sequence \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Tất cả kết quả chính dùng cùng full validation. Checkpoint được chọn theo AssA trên một subset validation cố định 3.894 frame; sau đó checkpoint đã chọn được đánh giá trên toàn bộ validation. Vì tập chọn checkpoint nằm trong full validation, các con số này là kết quả validation, không phải ước lượng trên một test set hoàn toàn chưa dùng. Bài báo không tối ưu hay báo cáo nhãn test ẩn của DanceTrack.
+
+\FloatBarrier
+\subsection{Các cấu hình đối chiếu}
+Mô hình nền là MOTIP không sử dụng nhánh hình học bổ sung. Phương pháp đề xuất, ký hiệu MOTIP + G4, giữ cấu trúc đó và thêm G4, MLP tương thích cùng residual fusion. Trong từng ngân sách, hai mô hình dùng chung detector, cách lấy clip, tăng cường dữ liệu, batch, accumulation, precision, optimizer và các ngưỡng vòng đời. Ba seed là 42, 123 và 3407.
+
+\begin{table}[!htbp]
+\centering
+\caption{Cấu hình đối chiếu MOTIP nền và MOTIP + G4.}\label{tab:3}
+
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{.29\linewidth}X}
+\toprule
+\textbf{Thành phần} & \textbf{Cấu hình thực nghiệm} \\
+\midrule
+Detector & Deformable DETR R50, pretrained, đóng băng \\
+Nhánh được học & Trajectory modeling, ID Decoder, ID embedding; thêm G4 MLP ở MOTIP + G4 \\
+Thời lượng / seed & 10 epoch; 42, 123, 3407 \\
+Batch / tích lũy / precision & 1 / 4 / FP32 \\
+Optimizer / LR / weight decay & AdamW / 0,0001 / 0,0005 \\
+Lịch LR & Milestone 6 và 9; hệ số 0,1 \\
+Clip / history khi suy luận & 30 frame / miss tolerance 30 \\
+Geometry & $66\to128\to128\to1$; 25.217 tham số \\
+Tiền huấn luyện geometry & 4 GT–GT + 4 GT-linked Pred–Pred; chỉ train \\
+Fusion & $T_b=2$; $T_g=0{,}5$; $\lambda=1$ cố định \\
+Chọn checkpoint & AssA trên small validation cố định 3.894 frame \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Mỗi mô hình được huấn luyện 10 epoch. MOTIP nền và MOTIP + G4 có cùng số epoch trong một ngân sách, nhưng các ngân sách lớn hơn có nhiều iteration hơn; ngoài ra MOTIP + G4 có bước tiền huấn luyện MLP. Do đó, so sánh này chưa tách hoàn toàn hiệu quả dữ liệu khỏi tổng ngân sách tối ưu. Detector đã được tiền huấn luyện với COCO/DanceTrack, nên “ít dữ liệu” ở đây chỉ lượng giám sát dùng để học liên kết, không phải toàn bộ lượng dữ liệu mà hệ thống từng được tiếp xúc.
+
+\FloatBarrier
+\subsection{Chỉ số và quy ước báo cáo}
+HOTA được tính qua nhiều ngưỡng IoU. Ở mỗi ngưỡng $\alpha$,
+\begin{equation}
+ \mathrm{HOTA}_{\alpha}
+   =\sqrt{\mathrm{DetA}_{\alpha}\,\mathrm{AssA}_{\alpha}}.
+ \label{eq:hota}
+\end{equation}
+Giá trị cuối là tổng hợp theo các ngưỡng, không lấy căn của hai giá trị DetA
+và AssA đã trung bình rồi gọi đó là HOTA chính thức. AssA là chỉ số chính để
+phân tích liên kết. IDF1 đánh giá tính nhất quán ID ở mức quỹ đạo; IDSW đếm các
+sự kiện đổi ID theo CLEAR matching. HOTA, DetA, AssA và IDF1 càng cao càng tốt;
+IDSW càng thấp càng tốt.
+
+Kết quả ba seed được trình bày dưới dạng trung bình \ensuremath{\pm} độ lệch chuẩn mẫu, $\mathrm{ddof}=1$. Chênh lệch theo seed được tính theo cặp trước khi tổng hợp. Chênh lệch AssA là điểm trên thang 0–100, không phải phần trăm tương đối. Thông lượng được tách riêng khỏi chất lượng, vì các run lịch sử không hoàn toàn đồng nhất về máy thực thi và phép đo VRAM.
+
+\FloatBarrier
+\section{Kết quả thực nghiệm}
+\FloatBarrier
+\subsection{Chất lượng theo dõi trên full validation}
+\begin{table}[!htbp]
+\centering
+\caption{Kết quả chính trên toàn bộ validation; trung bình và độ lệch chuẩn mẫu của ba seed.}\label{tab:4}
+
+\small\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{llllll}
+\toprule
+\textbf{Train} & \textbf{Mô hình} & \textbf{HOTA \ensuremath{\uparrow}} & \textbf{DetA \ensuremath{\uparrow}} & \textbf{AssA \ensuremath{\uparrow}} & \textbf{IDF1 \ensuremath{\uparrow}} \\
+\midrule
+5\% & MOTIP nền & 35.31 \ensuremath{\pm} 1.43 & 72.60 \ensuremath{\pm} 0.12 & 17.32 \ensuremath{\pm} 1.42 & 32.71 \ensuremath{\pm} 1.47 \\
+5\% & MOTIP + G4 & \textbf{42.42 \ensuremath{\pm} 0.68} & \textbf{73.50 \ensuremath{\pm} 0.18} & \textbf{24.68 \ensuremath{\pm} 0.82} & \textbf{39.95 \ensuremath{\pm} 0.58} \\
+\addlinespace[4pt]
+10\% & MOTIP nền & 44.10 \ensuremath{\pm} 0.48 & 73.29 \ensuremath{\pm} 0.09 & 26.69 \ensuremath{\pm} 0.61 & 43.60 \ensuremath{\pm} 0.65 \\
+10\% & MOTIP + G4 & \textbf{51.43 \ensuremath{\pm} 1.07} & \textbf{75.03 \ensuremath{\pm} 0.35} & \textbf{35.51 \ensuremath{\pm} 1.41} & \textbf{50.62 \ensuremath{\pm} 1.19} \\
+\addlinespace[4pt]
+15\% & MOTIP nền & 47.47 \ensuremath{\pm} 0.84 & 73.72 \ensuremath{\pm} 0.15 & 30.73 \ensuremath{\pm} 1.04 & 48.04 \ensuremath{\pm} 1.23 \\
+15\% & MOTIP + G4 & \textbf{53.45 \ensuremath{\pm} 0.58} & \textbf{75.18 \ensuremath{\pm} 0.03} & \textbf{38.25 \ensuremath{\pm} 0.83} & \textbf{53.56 \ensuremath{\pm} 0.79} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ở ngân sách 5\%, AssA tăng từ 17.322 lên 24.680. Ở 10\% và 15\%, chênh lệch trung bình tương ứng là +8.821 và +7.525 điểm. Kết quả ở cả chín cặp seed/ngân sách đều có AssA của MOTIP + G4 cao hơn MOTIP nền. Các metric HOTA và IDF1 cũng tăng trong từng cặp của nhóm số liệu này. Mức tăng DetA nhỏ hơn rõ rệt so với AssA, phù hợp với mục tiêu cải thiện liên kết; tuy vậy, DetA không bất biến tuyệt đối do tác động của quyết định NEW/lifecycle. Không diễn giải các giá trị này thành kết quả test của paper gốc.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/quality_vs_budget.pdf}
+\caption{Trung bình và độ lệch chuẩn ba seed. Trục x là phần trăm số frame train; các điểm tương ứng các tập con lồng nhau, không phải cùng một mô hình được huấn luyện tăng dần.}\label{fig:5}
+\end{figure}
+
+\FloatBarrier
+\subsection{ID switch và độ nhất quán giữa seed}
+\begin{table}[!htbp]
+\centering
+\caption{Số ID switch và chênh lệch AssA; mọi seed đều được giữ lại.}\label{tab:5}
+
+\small\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Train} & \textbf{MOTIP nền IDSW \ensuremath{\downarrow}} & \textbf{MOTIP + G4 IDSW \ensuremath{\downarrow}} & \textbf{Giảm IDSW} & \textbf{\ensuremath{\Delta}AssA} \\
+\midrule
+5\% & 57,597 \ensuremath{\pm} 2,758 & 33,653 \ensuremath{\pm} 1,443 & 41.6\% & +7.358 \\
+10\% & 23,157 \ensuremath{\pm} 3,338 & 12,282 \ensuremath{\pm} 1,750 & 47.0\% & +8.821 \\
+15\% & 14,455 \ensuremath{\pm} 2,634 & 9,705 \ensuremath{\pm} 191 & 32.9\% & +7.525 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Tỷ lệ giảm IDSW trong bảng được tính từ IDSW trung bình của hai cấu hình: $\frac{\mathrm{IDSW}_{\mathrm{base}}-\mathrm{IDSW}_{\mathrm{geom}}}{\mathrm{IDSW}_{\mathrm{base}}}$. Đây không phải trung bình của ba tỷ lệ phần trăm riêng, và không được gọi là một phép kiểm định thống kê. Số lượng seed bằng ba chỉ hỗ trợ nhận xét về sự nhất quán quan sát được, không đủ để tuyên bố bằng chứng thống kê dứt khoát.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.34\textheight,keepaspectratio]{../../figures/paired_delta.pdf}
+\caption{Chênh lệch AssA ghép cặp MOTIP + G4\ensuremath{-}MOTIP nền cho ba seed tại mỗi ngân sách dữ liệu.}\label{fig:6}
+\end{figure}
+
+\FloatBarrier
+\subsection{Chi phí tính toán}
+\begin{table}[!htbp]
+\centering
+\caption{Thông lượng và bộ nhớ: các cặp seed 42 trên cùng hệ thống local.}\label{tab:6}
+
+\small\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Train} & \textbf{MOTIP nền FPS} & \textbf{MOTIP + G4 FPS} & \textbf{\ensuremath{\Delta}FPS tương đối} & \textbf{\ensuremath{\Delta}VRAM (MiB)} \\
+\midrule
+5\% & 8.00 & 7.59 & -5.2\% & +3.4 \\
+10\% & 7.95 & 7.47 & -6.0\% & +7.8 \\
+15\% & 7.88 & 7.41 & -6.0\% & +9.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Bảng 6 dùng các cặp seed 42 trên cùng hệ thống local để mô tả throughput của checkpoint đã chọn. Không lấy trung bình FPS/VRAM của các máy khác nhau để kết luận overhead thuật toán. MLP geometry nhỏ hơn nhiều so với detector và nhánh Transformer, nhưng vẫn có chi phí dựng đặc trưng và chấm các cặp ứng viên. Video demo còn tốn thời gian vẽ và mã hóa; FPS phát lại của video không được coi là FPS suy luận.
+
+\FloatBarrier
+\subsection{Phân tích tình huống liên kết}
+Để quan sát sự nhất quán danh tính theo thời gian, chúng tôi đối chiếu dự đoán đã lưu với GT trong hai video demo. Hai tracker sử dụng các checkpoint seed 42 đã chọn của ngân sách 15\% dữ liệu. Mỗi ví dụ hiển thị bốn frame quanh một sự kiện đổi ID của MOTIP nền, trong khi MOTIP + G4 duy trì cùng ID. Đây là các trường hợp được chọn có chủ đích để minh họa lợi ích của nhánh hình học; mức cải thiện tổng thể vẫn được đánh giá bằng các kết quả định lượng ở trên.
+
+Việc đối chiếu sử dụng quy tắc ghép của CLEAR trong TrackEval với ngưỡng IoU 0,5. Với từng đối tượng minh họa, chúng tôi kiểm tra cả chín frame liên tiếp quanh sự kiện, không chỉ bốn ảnh được trình bày. Đối tượng phải được ghép với hộp dự đoán của cả hai tracker trong toàn bộ cửa sổ; các cặp được chọn đều có IoU ít nhất 0,65. GT chỉ được đọc sau khi suy luận để xác định sự kiện và vẽ hình, không tham gia quyết định ID của tracker.
+
+Trong các hình, đường xanh liền là hộp dự đoán của đối tượng đang phân tích; đường trắng nét đứt là hộp GT của cùng đối tượng; đường vàng nét đứt biểu diễn một đối tượng GT lân cận để thấy vùng chồng lấn. Mỗi ô dùng cùng vùng ảnh cắt cho cả hai tracker. ID do hai tracker sinh ra là các nhãn độc lập, không cần trùng nhau hoặc trùng số ID trong GT; điều cần so sánh là sự nhất quán của ID qua thời gian.
+
+\textbf{Trường hợp 1 — các đối tượng giao cắt.} Trong dancetrack0004, đối tượng GT 2 được MOTIP nền gán ID 0 ở frame 53 và 56, nhưng chuyển sang ID 2 từ frame 57 đến frame 61. MOTIP + G4 duy trì ID 0 trong cả bốn ảnh, cũng như toàn bộ cửa sổ chín frame được kiểm tra. Các hộp của hai mô hình đều tiếp tục khớp với cùng đối tượng, nên khác biệt được minh họa là đổi danh tính, không phải một mô hình mất phát hiện.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.46\textheight,keepaspectratio]{../../figures/association_case_1.pdf}
+\caption{Cùng đối tượng GT 2 tại các frame 53, 56, 57 và 61 của dancetrack0004. MOTIP nền đổi ID 0 sang 2; MOTIP + G4 giữ ID 0. Các màu và đường nét được định nghĩa trong phần mô tả.}\label{fig:7}
+\end{figure}
+
+\FloatBarrier
+\textbf{Trường hợp 2 — chồng lấn và ngoại hình tương tự.} Trong dancetrack0034, đối tượng GT 8 di chuyển gần một người mặc trang phục tương tự. MOTIP nền chuyển từ ID 387 ở frame 737 và 740 sang ID 442 ở frame 741 và 745. MOTIP + G4 giữ ID 6 trong toàn bộ cửa sổ. Ví dụ này minh họa một trường hợp cấu hình có hình học duy trì được danh tính khi vị trí các đối tượng chồng lấn; riêng chuỗi ảnh này không đủ để tách đóng góp của từng thành phần G4.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.46\textheight,keepaspectratio]{../../figures/association_case_2.pdf}
+\caption{Cùng đối tượng GT 8 tại các frame 737, 740, 741 và 745 của dancetrack0034. MOTIP nền đổi ID 387 sang 442; MOTIP + G4 duy trì ID 6. GT được dùng để kiểm chứng hậu nghiệm, không làm đầu vào suy luận.}\label{fig:8}
+\end{figure}
+
+\FloatBarrier
+\FloatBarrier
+\section{Thảo luận}
+\FloatBarrier
+\subsection{Hình học bổ sung điều gì?}
+Nhánh G4 cung cấp trực tiếp các quan hệ vị trí và tỷ lệ mà mô hình nền phải học gián tiếp từ lịch sử đặc trưng. Những quan hệ này có thể giúp loại ứng viên không phù hợp về chuyển động, nhất là khi ngoại hình tương tự. Kết quả nhất quán trong các cấu hình đã thử hỗ trợ giá trị thực dụng của tín hiệu bổ sung. Tuy nhiên, chỉ nhìn thấy AssA tăng không xác định duy nhất cơ chế: tiền huấn luyện MLP, thay đổi hình dạng logit và thời lượng tối ưu bổ sung cũng có thể đóng góp.
+
+\FloatBarrier
+\subsection{Phát hiện và liên kết chưa hoàn toàn độc lập}
+Detector được giữ cố định không có nghĩa DetA của hai tracker phải bằng nhau tuyệt đối. Việc một phát hiện được coi là NEW hay một track hiện hữu có thể ảnh hưởng bộ lọc newborn và tập hộp cuối cùng xuất ra. Khi ID quyết định khác nhau, vòng phản hồi cũng làm lịch sử và tập ứng viên sau đó khác nhau. Vì vậy, chênh lệch DetA nhỏ cần được phân tích cùng sự thay đổi quyết định/lifecycle; không được quy thành detector đã học tốt hơn.
+
+\FloatBarrier
+\subsection{Giới hạn thực nghiệm}
+Các subset chỉ đạt tối đa 15\% số frame train và được huấn luyện với detector đóng băng. Bài báo không chứng minh geometry luôn vượt MOTIP khi huấn luyện end-to-end trên toàn bộ dữ liệu. Các điểm ngân sách cũng không cho một đường lợi ích giảm đơn điệu tuyệt đối; không suy ra quy luật scaling từ ba điểm. Thay đổi thành phần sequence vẫn có thể đóng góp vào độ khó mặc dù các subset được lồng nhau.
+
+Việc tiền huấn luyện geometry từ GT-linked predicted boxes làm lịch sử sạch hơn về sở hữu ID so với vòng lặp dự đoán-ID khi triển khai. Vì vậy, mô hình có thể kém tin cậy sau khi bộ nhớ đã bị nhiễm ID sai hoặc thiếu nhiều lag. Sự khác nhau này là giới hạn về phân phối, không tự động là rò rỉ nhãn validation. Kiểm tra provenance xác nhận các sequence và thống kê tiền huấn luyện geometry thuộc train; báo cáo không mở rộng kiểm tra đó thành một cam kết về mọi dữ liệu đã dùng để tiền huấn luyện detector công bố sẵn.
+
+Các phép đo FPS/VRAM lịch sử có khác biệt giữa hệ thống và cách đặt mốc thống kê, nên được trình bày có điều kiện. Kết quả chính là kết quả validation với quy tắc chọn checkpoint được công khai; chưa có một test set độc lập dùng để xác nhận toàn bộ lựa chọn phương pháp.
+
+\FloatBarrier
+\section{Kết luận}
+Bài báo tái hiện cơ chế dự đoán ID theo ngữ cảnh của MOTIP và khảo sát một nhánh hình học quỹ đạo đa độ trễ ở mức ứng viên. Với cùng detector tiền huấn luyện đóng băng, nhánh G4–MLP cải thiện chất lượng liên kết trong cả ba ngân sách DanceTrack được khảo sát, đồng thời giảm ID switch trên các cặp seed đã đối chiếu. Kết quả ủng hộ việc bổ sung hình học tường minh trong thiết lập học liên kết được giới hạn dữ liệu, nhưng chưa chứng minh tính vượt trội phổ quát của cấu hình này.
+
+Hướng tiếp theo phù hợp là đánh giá trên tập chọn mô hình và tập kiểm tra tách rời ở mức sequence, thực hiện đối chứng cân bằng số cập nhật/chi phí tiền huấn luyện, rồi mới khảo sát toàn bộ dữ liệu hoặc điều chỉnh cách hợp nhất. Đồ án hiện tại bàn giao mã nguồn tách riêng, manifest, cấu hình, hồ sơ kiểm chứng số liệu và demo suy luận để kết quả có thể được xem xét lại.
+
+\FloatBarrier\bibliographystyle{unsrt}\bibliography{references}
+\clearpage\appendix
+\FloatBarrier
+\section{Khả năng tái lập và phân định đóng góp}
+Đồ án kế thừa mã nguồn MOTIP của tác giả, lưu kèm thông tin ghi nhận và giấy phép trong thư mục mã nguồn riêng. Các script đồ án thực hiện đóng gói cấu hình, kiểm tra artifact, tổng hợp thống kê, chạy demo và tạo hình/báo cáo. Các kết quả trong bài được tổng hợp từ các lần huấn luyện và đánh giá đã hoàn thành.
+
+Tệp \path{experiments/protocol.json} ghi nguồn của 18 summary đã đối chiếu, hash checkpoint, quy tắc chọn checkpoint và phạm vi dữ liệu. Tệp \path{experiments/metrics_all_seeds.csv} lưu từng cặp seed/ngân sách; các bảng trung bình được tính lại từ tệp này. Các protocol train-only của geometry cùng manifest được lưu trong \path{sources/artifacts/}.
+
+Mọi suy luận trong demo chỉ dùng ảnh và lịch sử dự đoán, không dùng GT hiện tại hoặc tương lai. Hai checkpoint minh họa được chọn bằng quy tắc small-validation AssA của thực nghiệm ba seed; không thay sang checkpoint có full-validation đẹp hơn chỉ để làm demo.
+
+Các tình huống ở mục 6.4 được kiểm chứng bằng script \path{scripts/qualitative_association.py}. Tệp \path{experiments/qualitative_association.json} lưu frame, ID GT, ID dự đoán, hộp, tiêu chí chọn ví dụ và hash dữ liệu nguồn. Phép đếm đổi ID trong bước trích xuất đã được đối chiếu với CLEAR của TrackEval trên cùng dữ liệu; các hình không thay thế kết quả đánh giá toàn bộ validation.
+
+\FloatBarrier
+\section{Bảng số liệu theo từng seed}
+\begin{table}[!htbp]
+\centering
+\caption{Kết quả từng seed; epoch được chọn bằng AssA trên small validation.}\label{tab:7}
+
+\small\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{llllllll}
+\toprule
+\textbf{Train} & \textbf{Seed} & \textbf{Mô hình} & \textbf{Epoch chọn} & \textbf{HOTA} & \textbf{AssA} & \textbf{IDF1} & \textbf{IDSW} \\
+\midrule
+5\% & 42 & MOTIP nền & 8 & 33.917 & 15.966 & 31.404 & 60,616 \\
+5\% & 42 & MOTIP + G4 & 6 & 41.697 & 23.778 & 39.334 & 33,632 \\
+5\% & 123 & MOTIP nền & 9 & 36.776 & 18.795 & 34.303 & 55,209 \\
+5\% & 123 & MOTIP + G4 & 9 & 42.532 & 24.876 & 40.042 & 32,221 \\
+5\% & 3407 & MOTIP nền & 9 & 35.232 & 17.205 & 32.421 & 56,965 \\
+5\% & 3407 & MOTIP + G4 & 6 & 43.036 & 25.385 & 40.484 & 35,107 \\
+10\% & 42 & MOTIP nền & 6 & 44.257 & 26.872 & 42.938 & 27,008 \\
+10\% & 42 & MOTIP + G4 & 6 & 51.932 & 35.998 & 50.812 & 11,688 \\
+10\% & 123 & MOTIP nền & 9 & 44.47 & 27.189 & 44.232 & 21,375 \\
+10\% & 123 & MOTIP + G4 & 8 & 52.159 & 36.61 & 51.707 & 10,906 \\
+10\% & 3407 & MOTIP nền & 8 & 43.561 & 26.011 & 43.642 & 21,088 \\
+10\% & 3407 & MOTIP + G4 & 9 & 50.204 & 33.927 & 49.344 & 14,252 \\
+15\% & 42 & MOTIP nền & 6 & 46.871 & 30.037 & 46.892 & 17,310 \\
+15\% & 42 & MOTIP + G4 & 9 & 53.428 & 38.217 & 53.612 & 9,727 \\
+15\% & 123 & MOTIP nền & 8 & 48.423 & 31.923 & 49.334 & 12,120 \\
+15\% & 123 & MOTIP + G4 & 4 & 52.885 & 37.442 & 52.738 & 9,503 \\
+15\% & 3407 & MOTIP nền & 6 & 47.102 & 30.218 & 47.897 & 13,936 \\
+15\% & 3407 & MOTIP + G4 & 8 & 54.037 & 39.095 & 54.322 & 9,884 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Bảng phụ lục giữ tất cả các seed. Các chỉ số còn lại, đường dẫn nguồn và hash được cung cấp trong tệp máy đọc được đi kèm.
+

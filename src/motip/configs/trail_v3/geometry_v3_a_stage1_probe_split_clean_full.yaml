@@ -1,0 +1,10 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/geometry_v3_a_4060ti.yaml
+OUTPUTS_DIR: outputs/research_v3/tracker/v3_a_stage1_probe_split_clean_full
+EXP_NAME: trail_motip_v3_a_stage1_probe_split_clean_full
+EPOCHS: 1
+MAX_STEPS_PER_EPOCH: 0
+EVAL_EPOCHS: []
+RUNTIME_PROBE_STEPS: 0
+SAMPLE_INTERVALS: [1]
+AUG_TRAJECTORY_OCCLUSION_PROB: 0.0
+AUG_TRAJECTORY_SWITCH_PROB: 0.0

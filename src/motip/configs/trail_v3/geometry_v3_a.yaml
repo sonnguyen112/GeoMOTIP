@@ -1,0 +1,60 @@
+SUPER_CONFIG_PATH: ./configs/trail_v1/baseline.yaml
+
+# V3 replaces the visual trail with direct candidate-wise G4 geometry.
+USE_TRAIL: false
+USE_GEOMETRY: true
+GEOMETRY_LAGS: [1, 2, 4, 8]
+GEOMETRY_DIM: 66
+GEOMETRY_HIDDEN_DIM: 128
+GEOMETRY_AUX_WEIGHT: 1.0
+GEOMETRY_FUSED_WEIGHT: 1.0
+GEOMETRY_FIXED_LAMBDA: 0.01
+GEOMETRY_LEARNED_LAMBDA: false
+GEOMETRY_VALIDATE_ALIGNMENT: true
+GEOMETRY_INPUT_CLIP: 8.0
+GEOMETRY_INPUT_NORMALIZE: true
+GEOMETRY_INPUT_STATS_PATH: outputs/research_v3/geometry_probe/geometry_probe_models.pt
+FREEZE_MOTIP: true
+
+# Initialize the frozen MOTIP path from the matched E0 subset checkpoint.
+INIT_CHECKPOINT: outputs/research_v1/full_E0_subset_s42/checkpoint_9.pth
+RESUME_MODEL:
+RESUME_OPTIMIZER: false
+RESUME_SCHEDULER: false
+RESUME_STATES: false
+
+# Representative-subset Stage 1 defaults.  Stage 2 overrides EPOCHS and
+# optionally enables evaluation after the final short run.
+DATASET_SPLITS: [val]
+TRAIN_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_train_manifest.txt
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+OUTPUTS_DIR: outputs/research_v3/tracker/v3_a_stage1
+EXP_NAME: trail_motip_v3_a_stage1
+EPOCHS: 1
+SAVE_CHECKPOINT_PER_EPOCH: 1
+EVAL_EPOCHS: [0]
+MAX_STEPS_PER_EPOCH: 0
+RUNTIME_PROBE_STEPS: 0
+
+# Association-only 4060 Ti-safe recipe.
+FREEZE_DETR: true
+DETR_TRAIN_MODE: frozen
+DETR_NUM_TRAIN_FRAMES: 0
+DETR_NUM_CHECKPOINT_FRAMES: 1
+MIXED_PRECISION: fp16
+BATCH_SIZE: 1
+ACCUMULATE_STEPS: 4
+NUM_WORKERS: 2
+PREFETCH_FACTOR: 2
+GRADIENT_CHECKPOINTING: true
+USE_DECODER_CHECKPOINT: true
+USE_ACCELERATE_CLIP_NORM: false
+SEPARATE_CLIP_NORM: true
+MAX_CLIP_NORM: 0.1
+LR: 1.0e-4
+LR_WARMUP_EPOCHS: 1
+SCHEDULER_MILESTONES: [6, 9]
+USE_AUX_LOSS: false

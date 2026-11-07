@@ -1,0 +1,4 @@
+# Exact train side of the fixed offline geometry-probe split.
+dancetrack0004
+dancetrack0043
+dancetrack0065

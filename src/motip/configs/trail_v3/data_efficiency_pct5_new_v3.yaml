@@ -1,0 +1,4 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct5_new_common.yaml
+USE_GEOMETRY: true
+OUTPUTS_DIR: outputs/research_data_efficiency/percent_5_10_15_s42/runs/p5/v3
+EXP_NAME: data_efficiency_pct5_new_v3_s42

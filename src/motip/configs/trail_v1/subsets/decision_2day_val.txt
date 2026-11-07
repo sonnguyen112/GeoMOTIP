@@ -1,0 +1,6 @@
+# Complete DanceTrack sequences; immutable after selection
+dancetrack0004
+dancetrack0043
+dancetrack0065
+dancetrack0077
+dancetrack0094

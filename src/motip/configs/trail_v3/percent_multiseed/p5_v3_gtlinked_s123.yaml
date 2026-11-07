@@ -1,0 +1,8 @@
+# Same validated 5% protocol; only the experiment seed and artifact paths change.
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct5_gtlinked_compare_v3.yaml
+SEED: 123
+INFERENCE_SEQUENCE_MANIFEST: outputs/research_data_efficiency/percent_5_10_15_multiseed/small_validation.txt
+INIT_CHECKPOINT: outputs/research_data_efficiency/percent_5_10_15_multiseed/geometry_pretrain/p5/s123/combined_init.pth
+OUTPUTS_DIR: outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p5/s123/v3_gtlinked
+EXP_NAME: data_efficiency_pct5_v3_gtlinked_s123
+GEOMETRY_INPUT_STATS_PATH: outputs/research_data_efficiency/percent_5_10_15_multiseed/geometry_pretrain/p5/s123/probe/geometry_probe_models.pt

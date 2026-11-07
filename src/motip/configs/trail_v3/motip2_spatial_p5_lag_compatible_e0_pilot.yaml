@@ -1,0 +1,18 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct5_new_common.yaml
+
+# Matched E0 control for the lag-compatible MOTIP-SP pilot.
+# Same seed, initialization, train/validation manifests, and temporal strides
+# {1, 2, 4}; all spatial-prior and geometry additions are disabled.
+SEED: 42
+SAMPLE_INTERVAL_CHOICES: [[1, 2, 4]]
+USE_GEOMETRY: false
+USE_SPATIAL_ID_SWITCHES: false
+USE_SPATIAL_ID_LOSS: false
+USE_MOTIP2_SPATIAL_ANCHOR: false
+INIT_CHECKPOINT: outputs/research_data_efficiency/detector_only_2k_s42/common_init.pth
+EPOCHS: 3
+SAVE_CHECKPOINT_PER_EPOCH: 1
+EVAL_EPOCHS: [2]
+MAX_STEPS_PER_EPOCH: 0
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/e0_lag_compatible
+EXP_NAME: motip2_spatial_p5_lag_compatible_e0_pilot_s42

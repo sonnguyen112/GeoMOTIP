@@ -1,0 +1,3 @@
+# Exact held-out side of the fixed offline geometry-probe split.
+dancetrack0077
+dancetrack0094

@@ -1,0 +1,10 @@
+# Full official DanceTrack validation for the best calibrated V3 checkpoint
+# trained on the fixed 2,088-frame representative subset (seed 42).
+SUPER_CONFIG_PATH: ./outputs/research_v3/matched_10epoch_fp32/v3/train/config.yaml
+INFERENCE_SEQUENCE_MANIFEST: null
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_DTYPE: FP32
+OUTPUTS_DIR: ./outputs/research_v3/larger_dancetrack_subset/full_dancetrack_val/small_subset/v3_best
+EXP_NAME: small_subset_v3_best_full_dancetrack_val

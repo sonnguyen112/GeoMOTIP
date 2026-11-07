@@ -1,0 +1,44 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/geometry_v3_a_4060ti.yaml
+
+# Matched three-epoch warm-start comparison.  Both arms start from the same
+# trained E0 model weights; V3 adds only the calibrated geometry branch.
+USE_TRAIL: false
+USE_GEOMETRY: false
+FREEZE_MOTIP: false
+INIT_CHECKPOINT: outputs/research_v1/full_E0_subset_s42/checkpoint_9.pth
+
+DATASET_SPLITS: [val]
+TRAIN_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_train_manifest.txt
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_DTYPE: FP32
+
+OUTPUTS_DIR: outputs/research_v3/matched_3epoch/e0
+EXP_NAME: trail_motip_matched_3epoch_e0_s42
+EPOCHS: 3
+SAVE_CHECKPOINT_PER_EPOCH: 1
+EVAL_EPOCHS: [0, 1, 2]
+MAX_STEPS_PER_EPOCH: 0
+RUNTIME_PROBE_STEPS: 0
+
+# Keep the validated association-only recipe identical in both arms.
+FREEZE_DETR: true
+DETR_TRAIN_MODE: frozen
+DETR_NUM_TRAIN_FRAMES: 0
+DETR_NUM_CHECKPOINT_FRAMES: 1
+MIXED_PRECISION: fp16
+BATCH_SIZE: 1
+ACCUMULATE_STEPS: 4
+NUM_WORKERS: 2
+PREFETCH_FACTOR: 2
+GRADIENT_CHECKPOINTING: true
+USE_DECODER_CHECKPOINT: true
+USE_ACCELERATE_CLIP_NORM: false
+SEPARATE_CLIP_NORM: true
+MAX_CLIP_NORM: 0.1
+LR: 1.0e-4
+LR_WARMUP_EPOCHS: 1
+SCHEDULER_MILESTONES: [6, 9]
+USE_AUX_LOSS: false

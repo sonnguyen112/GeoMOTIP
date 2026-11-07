@@ -1,0 +1,19 @@
+# Inference-only candidate-logit diagnostic for the completed full-data V3 run.
+# Uses official DanceTrack validation; no weights or calibration are changed.
+SUPER_CONFIG_PATH: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/v3.yaml
+DATA_ROOT: ./datasets
+DETR_PRETRAIN: ./pretrains/r50_deformable_detr_coco_dancetrack.pth
+GEOMETRY_INPUT_STATS_PATH: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/geometry_pretrain/probe/geometry_probe_models.pt
+INFERENCE_SEQUENCE_MANIFEST: null
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_MODEL: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/train/checkpoint_6.pth
+INFERENCE_DTYPE: FP32
+GEOMETRY_CANDIDATE_DIAGNOSTICS: true
+SAVE_BRANCH_LOGITS: true
+BRANCH_LOGITS_DIR: ./outputs/research_v5/full_v3_epoch6_candidate_eval/branch_logits
+OUTPUTS_DIR: ./outputs/research_v5/full_v3_epoch6_candidate_eval
+EXP_NAME: full_v3_epoch6_candidate_diagnostic
+INFERENCE_GROUP: full_v3_epoch6_candidate_diagnostic
+USE_WANDB: false

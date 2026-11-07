@@ -1,0 +1,9 @@
+# Optimization-budget control: same E0 5% initialization and training recipe.
+# Stretch the 10-epoch LR schedule by 3x to approximately match 15% x 10 epochs.
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct5_new_e0.yaml
+EPOCHS: 30
+LR_WARMUP_EPOCHS: 3
+SCHEDULER_MILESTONES: [18, 27]
+EVAL_EPOCHS: [9, 19, 29]
+OUTPUTS_DIR: outputs/research_data_efficiency/percent_5_10_15_s42/long_training_control/e0_5pct_30epoch_s42
+EXP_NAME: data_efficiency_pct5_e0_30epoch_control_s42

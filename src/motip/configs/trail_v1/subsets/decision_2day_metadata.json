@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-06T16:52:00.668783+00:00",
+  "seed": 42,
+  "dataset_root": "/home/sonnguyen112/data/Trail-MOT/MOTIP/datasets/DanceTrack",
+  "sampling_recipe": {
+    "sample_length": 30,
+    "sample_interval": 4,
+    "sampler": "NaiveSampler",
+    "sampler_seed": 1025,
+    "selection_tie_break_seed": 42,
+    "length_per_iteration": null
+  },
+  "target_training_iterations_per_epoch": [
+    1800,
+    2000
+  ],
+  "source_counts": {
+    "train_sequences": 40,
+    "train_frames": 41796,
+    "val_sequences": 25,
+    "val_frames": 25508
+  },
+  "selection": {
+    "train": {
+      "candidate_count": 147,
+      "objective": "maximize normalized metadata diversity, then minimize distance from budget midpoint",
+      "score": 3.9813911773600745,
+      "distance_from_midpoint": 41.0
+    },
+    "validation": {
+      "candidate_count": 56043,
+      "objective": "five complete sequences maximizing normalized metadata diversity near 4,000 frames",
+      "score": 5.901901645635281,
+      "frames": 3894
+    }
+  },
+  "train": {
+    "manifest": "configs/trail_v1/subsets/decision_2day_train.txt",
+    "sequences": [
+      {
+        "sequence": "dancetrack0033",
+        "length": 803,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 6237,
+        "unique_ids": 8,
+        "persons_per_frame": 7.767123287671233,
+        "mean_pair_iou": 0.06767806055296058,
+        "close_pair_rate": 0.24735898887002453,
+        "motion_magnitude": 0.007975817304409894,
+        "max_gap": 41,
+        "mean_gap": 1.029539251886338,
+        "missing_proxy": 0.02910958904109584,
+        "crossing_proxy": 0.004675795600935159,
+        "crossing_events": 98,
+        "sample_length": 30,
+        "iterations_epoch0": 774,
+        "selection_reason": "Selected by the deterministic training metadata-diversity objective; it contributes high box overlap, high crossing, low missing-observation."
+      },
+      {
+        "sequence": "dancetrack0057",
+        "length": 622,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 3004,
+        "unique_ids": 6,
+        "persons_per_frame": 4.829581993569132,
+        "mean_pair_iou": 0.04203999015515264,
+        "close_pair_rate": 0.1251500085719184,
+        "motion_magnitude": 0.009468876014799586,
+        "max_gap": 48,
+        "mean_gap": 1.0390260173448966,
+        "missing_proxy": 0.195069667738478,
+        "crossing_proxy": 0.0036382536382536385,
+        "crossing_events": 21,
+        "sample_length": 30,
+        "iterations_epoch0": 593,
+        "selection_reason": "Selected by the deterministic training metadata-diversity objective; it contributes low density, high motion, low identity count."
+      },
+      {
+        "sequence": "dancetrack0096",
+        "length": 603,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 15787,
+        "unique_ids": 40,
+        "persons_per_frame": 26.180762852404644,
+        "mean_pair_iou": 0.018280359772531316,
+        "close_pair_rate": 0.22335403952669824,
+        "motion_magnitude": 0.0032289582176866526,
+        "max_gap": 25,
+        "mean_gap": 1.006921953387947,
+        "missing_proxy": 0.3454809286898839,
+        "crossing_proxy": 0.0027566596416799625,
+        "crossing_events": 603,
+        "sample_length": 30,
+        "iterations_epoch0": 574,
+        "selection_reason": "Selected by the deterministic training metadata-diversity objective; it contributes high density, low box overlap, low motion, low crossing, high missing-observation, high identity count."
+      }
+    ],
+    "predicted_iterations_epoch0": 1941,
+    "actual_loader": {
+      "iterations_epoch0": 1941,
+      "iterations_by_sequence": {
+        "dancetrack0033": 774,
+        "dancetrack0057": 593,
+        "dancetrack0096": 574
+      },
+      "sequences": [
+        "dancetrack0033",
+        "dancetrack0057",
+        "dancetrack0096"
+      ],
+      "frames": 2028,
+      "all_samples_are_complete": true,
+      "torch_version": "2.4.0"
+    }
+  },
+  "validation": {
+    "manifest": "configs/trail_v1/subsets/decision_2day_val.txt",
+    "sequences": [
+      {
+        "sequence": "dancetrack0004",
+        "length": 1203,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 4586,
+        "unique_ids": 4,
+        "persons_per_frame": 3.8121363258520367,
+        "mean_pair_iou": 0.11983668681456137,
+        "close_pair_rate": 0.38724304715840385,
+        "motion_magnitude": 0.006601875664599794,
+        "max_gap": 30,
+        "mean_gap": 1.046922741161065,
+        "missing_proxy": 0.046965918536990836,
+        "crossing_proxy": 0.006574923547400612,
+        "crossing_events": 43,
+        "sample_length": 30,
+        "iterations_epoch0": 1174,
+        "selection_reason": "Selected by the deterministic validation metadata-diversity objective; it contributes low density, high box overlap, high crossing, low identity count."
+      },
+      {
+        "sequence": "dancetrack0043",
+        "length": 183,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 1675,
+        "unique_ids": 14,
+        "persons_per_frame": 9.153005464480874,
+        "mean_pair_iou": 0.07177207695345726,
+        "close_pair_rate": 0.4383083854090975,
+        "motion_magnitude": 0.004203568634358071,
+        "max_gap": 32,
+        "mean_gap": 1.1571342564720049,
+        "missing_proxy": 0.3462138953942233,
+        "crossing_proxy": 0.0017009432503479202,
+        "crossing_events": 11,
+        "sample_length": 30,
+        "iterations_epoch0": 154,
+        "selection_reason": "Selected by the deterministic validation metadata-diversity objective; it contributes high missing-observation."
+      },
+      {
+        "sequence": "dancetrack0065",
+        "length": 702,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 3505,
+        "unique_ids": 5,
+        "persons_per_frame": 4.992877492877493,
+        "mean_pair_iou": 0.028979105394001888,
+        "close_pair_rate": 0.1437142857142857,
+        "motion_magnitude": 0.008230240709046741,
+        "max_gap": 3,
+        "mean_gap": 1.0014285714285713,
+        "missing_proxy": 0.0014245014245014564,
+        "crossing_proxy": 0.005733944954128441,
+        "crossing_events": 40,
+        "sample_length": 30,
+        "iterations_epoch0": 673,
+        "selection_reason": "Selected by the deterministic validation metadata-diversity objective; it contributes high motion."
+      },
+      {
+        "sequence": "dancetrack0077",
+        "length": 1203,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 10827,
+        "unique_ids": 9,
+        "persons_per_frame": 9.0,
+        "mean_pair_iou": 0.03235595402270856,
+        "close_pair_rate": 0.18980326960376837,
+        "motion_magnitude": 0.0026400559685780768,
+        "max_gap": 1,
+        "mean_gap": 1.0,
+        "missing_proxy": 0.0,
+        "crossing_proxy": 0.001017152896574044,
+        "crossing_events": 44,
+        "sample_length": 30,
+        "iterations_epoch0": 1174,
+        "selection_reason": "Selected by the deterministic validation metadata-diversity objective; it contributes low motion, low missing-observation."
+      },
+      {
+        "sequence": "dancetrack0094",
+        "length": 603,
+        "width": 1920,
+        "height": 1080,
+        "gt_rows": 11749,
+        "unique_ids": 25,
+        "persons_per_frame": 19.48424543946932,
+        "mean_pair_iou": 0.020179700297816128,
+        "close_pair_rate": 0.20298330983673654,
+        "motion_magnitude": 0.0033619275820050854,
+        "max_gap": 247,
+        "mean_gap": 1.2410440122824975,
+        "missing_proxy": 0.22063018242122723,
+        "crossing_proxy": 0.0006362692167338804,
+        "crossing_events": 68,
+        "sample_length": 30,
+        "iterations_epoch0": 574,
+        "selection_reason": "Selected by the deterministic validation metadata-diversity objective; it contributes high density, low box overlap, low crossing, high identity count."
+      }
+    ],
+    "complete_frames": 3894
+  },
+  "train_validation_overlap": [],
+  "manifest_sha256": {
+    "train": "3a0720949fadfbc62dae33be7d0d07a844db69d43e387a1c89090868ce4678c4",
+    "validation": "704059d2fc0f919a23d5aee325cc6bc1073a3226257d0c9affd626c9ea8dd22b"
+  },
+  "immutable_note": "Do not change manifests after E0 starts; both E0 and E5 must consume these exact files."
+}

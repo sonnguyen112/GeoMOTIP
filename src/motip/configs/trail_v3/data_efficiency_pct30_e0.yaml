@@ -1,0 +1,5 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct30_common.yaml
+USE_GEOMETRY: false
+OUTPUTS_DIR: outputs/research_data_efficiency/percent_10_20_30_s42/runs/p30/e0
+EXP_NAME: data_efficiency_pct30_e0_s42
+

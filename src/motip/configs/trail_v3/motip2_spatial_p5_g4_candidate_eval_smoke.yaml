@@ -1,0 +1,5 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/motip2_spatial_p5_g4_candidate_eval.yaml
+
+# Two-sequence smoke test for the opt-in NEW-inclusive geometry cache writer.
+INFERENCE_GROUP: sp_g4_candidate_smoke
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt

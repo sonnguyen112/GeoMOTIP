@@ -1,0 +1,14 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/motip2_spatial_p5_g4_candidate_eval.yaml
+
+INFERENCE_MODE: submit
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_SEQUENCE_MANIFEST: outputs/research_v4/motip2_spatial_p5_pilot_s42/candidate_appearance/val_smoke_sequence.txt
+INFERENCE_GROUP: sp_g4_appearance_smoke
+INFERENCE_MODEL: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp_g4_lag_compatible/checkpoint_2.pth
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/candidate_appearance
+EXP_NAME: motip2_spatial_p5_g4_appearance_smoke_s42
+GEOMETRY_CANDIDATE_DIAGNOSTICS: true
+SAVE_BRANCH_LOGITS: true
+SAVE_CANDIDATE_APPEARANCE_DIAGNOSTICS: true
+USE_WANDB: false

@@ -1,0 +1,4 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/percent_multiseed/p15_e0_s3407.yaml
+INFERENCE_SEQUENCE_MANIFEST: outputs/research_data_efficiency/percent_5_10_15_s42/full_dancetrack_val.txt
+INFERENCE_MODE: evaluate
+INFERENCE_GROUP: best_by_small_val

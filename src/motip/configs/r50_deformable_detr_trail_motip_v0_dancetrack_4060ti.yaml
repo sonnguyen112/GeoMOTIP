@@ -1,0 +1,18 @@
+# Trail-MOTIP V0: lower-memory profile for a single RTX 4060 Ti 16GB.
+# This is intended for iteration/prototyping, not a strictly identical training recipe.
+SUPER_CONFIG_PATH: ./configs/r50_deformable_detr_motip_dancetrack.yaml
+
+TRAIL_ENABLED: True
+TRAIL_GRID_H: 12
+TRAIL_GRID_W: 20
+TRAIL_ALPHA: 0.8
+TRAIL_ENCODER_HIDDEN_DIM: 128
+TRAIL_RASTER_SHARPNESS: 80.0
+TRAIL_FUSION_SCALE: 1.0
+
+# Memory-oriented overrides.
+NUM_WORKERS: 4
+PREFETCH_FACTOR: 2
+DETR_NUM_TRAIN_FRAMES: 2
+DETR_NUM_CHECKPOINT_FRAMES: 2
+ACCUMULATE_STEPS: 4

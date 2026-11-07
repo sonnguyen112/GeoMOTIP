@@ -1,0 +1,2 @@
+SUPER_CONFIG_PATH: ./configs/trail_v1/baseline.yaml
+USE_TRAIL: true

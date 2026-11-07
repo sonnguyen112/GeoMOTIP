@@ -1,0 +1,8 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/geometry_v3_a_stage1.yaml
+OUTPUTS_DIR: outputs/research_v3/tracker/v3_a_stage2
+EXP_NAME: trail_motip_v3_a_stage2
+EPOCHS: 2
+INIT_CHECKPOINT: outputs/research_v3/tracker/v3_a_stage1/checkpoint_0.pth
+EVAL_EPOCHS: [1]
+MAX_STEPS_PER_EPOCH: 200
+RUNTIME_PROBE_STEPS: 0

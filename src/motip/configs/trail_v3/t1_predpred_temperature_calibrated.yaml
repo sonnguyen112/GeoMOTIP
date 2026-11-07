@@ -1,0 +1,9 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/t1_predpred_calibrated.yaml
+GEOMETRY_BASE_TEMPERATURE: 2.0
+GEOMETRY_TEMPERATURE: 0.5
+GEOMETRY_FIXED_LAMBDA: 1.0
+INFERENCE_MODEL: outputs/research_v3/short_tracker_fusion/t1_predpred_calibrated.pth
+OUTPUTS_DIR: outputs/research_v3/short_tracker_fusion/t1_temperature_eval
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt
+INFERENCE_MODE: evaluate
+INFERENCE_GROUP: calibrated_temperature

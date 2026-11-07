@@ -1,0 +1,18 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct5_new_common.yaml
+
+SEED: 42
+USE_GEOMETRY: false
+USE_SPATIAL_ID_SWITCHES: true
+SPATIAL_ID_SWITCH_SIGMA: 0.5
+USE_SPATIAL_ID_LOSS: true
+SPATIAL_ID_GIOU_WEIGHT: 2.0
+SPATIAL_ID_L1_WEIGHT: 5.0
+USE_MOTIP2_SPATIAL_ANCHOR: true
+
+INIT_CHECKPOINT: outputs/research_data_efficiency/detector_only_2k_s42/common_init.pth
+EPOCHS: 3
+SAVE_CHECKPOINT_PER_EPOCH: 1
+EVAL_EPOCHS: [2]
+MAX_STEPS_PER_EPOCH: 0
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp
+EXP_NAME: motip2_spatial_p5_pilot_s42

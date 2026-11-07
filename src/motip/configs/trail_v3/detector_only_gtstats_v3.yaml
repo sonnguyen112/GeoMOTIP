@@ -1,0 +1,5 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/detector_only_gtstats_common.yaml
+USE_GEOMETRY: true
+OUTPUTS_DIR: outputs/research_data_efficiency/detector_only_2k_s42_gtstats/v3
+EXP_NAME: data_efficiency_detector_only_gtstats_2k_v3_s42
+

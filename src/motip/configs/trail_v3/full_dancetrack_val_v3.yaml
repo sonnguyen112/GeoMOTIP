@@ -1,0 +1,10 @@
+# Full official DanceTrack validation evaluation for the best V3 checkpoint.
+# Inherit the resolved V3 run config, but remove the representative-subset filter.
+SUPER_CONFIG_PATH: ./outputs/research_v3/larger_dancetrack_subset/v3/train/config.yaml
+INFERENCE_SEQUENCE_MANIFEST: null
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_DTYPE: FP32
+OUTPUTS_DIR: ./outputs/research_v3/larger_dancetrack_subset/full_dancetrack_val/v3_best_epoch5
+EXP_NAME: larger_subset_v3_best_epoch5_full_dancetrack_val

@@ -1,0 +1,5 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/data_efficiency_pct10_new_e0.yaml
+RESUME_MODEL: outputs/research_data_efficiency/percent_5_10_15_s42/runs/p10/e0/checkpoint_1.pth
+RESUME_OPTIMIZER: true
+RESUME_SCHEDULER: true
+RESUME_STATES: true

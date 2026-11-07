@@ -1,0 +1,8 @@
+\documentclass[border=3pt]{standalone}
+\usepackage{fix-cm,fontspec,amsmath,amssymb,xcolor}
+\setmainfont{TeX Gyre Termes}
+\definecolor{ink}{HTML}{15304C}
+\begin{document}
+\color{ink}\fontsize{24}{32}\selectfont
+$\displaystyle \operatorname{Attention}(\mathbf Q,\mathbf K,\mathbf V)=\operatorname{softmax}\!\left(\frac{\mathbf Q\mathbf K^{\mathsf T}}{\sqrt{d_h}}+\mathbf M+\mathbf B_{\mathrm{time}}\right)\mathbf V$
+\end{document}

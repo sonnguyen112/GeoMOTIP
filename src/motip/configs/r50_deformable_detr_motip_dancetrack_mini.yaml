@@ -1,0 +1,10 @@
+# MOTIP baseline development config for the symlinked DanceTrack mini subset.
+# Dataset selection is controlled with: --data-root ./datasets_mini/
+SUPER_CONFIG_PATH: ./configs/r50_deformable_detr_motip_dancetrack.yaml
+
+# Match the Trail mini recipe exactly; only the Trail branch differs.
+EPOCHS: 3
+SCHEDULER_MILESTONES: [2]
+NUM_WORKERS: 4
+PREFETCH_FACTOR: 2
+SAVE_CHECKPOINT_PER_EPOCH: 1

@@ -1,0 +1,8 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/geometry_v3_a_offline_init_eval.yaml
+USE_TRAIL: false
+USE_GEOMETRY: false
+INIT_CHECKPOINT: outputs/research_v1/full_E0_subset_s42/checkpoint_9.pth
+OUTPUTS_DIR: outputs/research_v3/tracker/e0_probe_val_eval
+EXP_NAME: e0_probe_val_eval
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt
+INFERENCE_DTYPE: FP32

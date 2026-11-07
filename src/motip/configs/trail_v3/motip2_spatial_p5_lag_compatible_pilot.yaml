@@ -1,0 +1,7 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/motip2_spatial_p5_pilot.yaml
+
+# Matched follow-up control for the optional G4 lag-compatible sampler.
+# This config is prepared but not launched.
+SAMPLE_INTERVAL_CHOICES: [[1, 2, 4]]
+OUTPUTS_DIR: outputs/research_v4/motip2_spatial_p5_pilot_s42/sp_lag_compatible
+EXP_NAME: motip2_spatial_p5_lag_compatible_pilot_s42

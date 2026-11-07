@@ -1,0 +1,8 @@
+# Recovery config after the host power failure.  Resume from the completed
+# epoch-0 checkpoint; all scientific settings inherit unchanged from the
+# locked larger-subset V3 config.
+SUPER_CONFIG_PATH: ./configs/trail_v3/larger_subset_10epoch_v3.yaml
+RESUME_MODEL: outputs/research_v3/larger_dancetrack_subset/v3/checkpoint_0.pth
+RESUME_OPTIMIZER: true
+RESUME_SCHEDULER: true
+RESUME_STATES: true

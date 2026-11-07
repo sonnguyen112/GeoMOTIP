@@ -1,0 +1,16 @@
+# One-shot benchmark submission for the preselected full-data V3 epoch-6 model.
+# This is inference-only; do not use DanceTrack test labels to tune the model.
+SUPER_CONFIG_PATH: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/v3.yaml
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: test
+INFERENCE_MODE: submit
+INFERENCE_MODEL: ./outputs/research_v3/full_dancetrack_motip_s42_2a100/train/checkpoint_6.pth
+INFERENCE_DTYPE: FP32
+INFERENCE_SEQUENCE_MANIFEST: null
+GEOMETRY_CANDIDATE_DIAGNOSTICS: false
+SAVE_BRANCH_LOGITS: false
+BRANCH_LOGITS_DIR: null
+OUTPUTS_DIR: ./outputs/research_v5/full_dancetrack_v3_epoch6_test_submission
+EXP_NAME: full_dancetrack_v3_epoch6_test_submit
+INFERENCE_GROUP: full_dancetrack_v3_epoch6_test_submit
+USE_WANDB: false

@@ -1,0 +1,164 @@
+{
+  "slides": [
+    {
+      "slide": 1,
+      "objects": 8,
+      "images": 1
+    },
+    {
+      "slide": 2,
+      "objects": 7,
+      "images": 1
+    },
+    {
+      "slide": 3,
+      "objects": 9,
+      "images": 1
+    },
+    {
+      "slide": 4,
+      "objects": 5,
+      "images": 1
+    },
+    {
+      "slide": 5,
+      "objects": 8,
+      "images": 2
+    },
+    {
+      "slide": 6,
+      "objects": 7,
+      "images": 2
+    },
+    {
+      "slide": 7,
+      "objects": 6,
+      "images": 1
+    },
+    {
+      "slide": 8,
+      "objects": 8,
+      "images": 3
+    },
+    {
+      "slide": 9,
+      "objects": 6,
+      "images": 2
+    },
+    {
+      "slide": 10,
+      "objects": 21,
+      "images": 1
+    },
+    {
+      "slide": 11,
+      "objects": 16,
+      "images": 0
+    },
+    {
+      "slide": 12,
+      "objects": 13,
+      "images": 1
+    },
+    {
+      "slide": 13,
+      "objects": 5,
+      "images": 1
+    },
+    {
+      "slide": 14,
+      "objects": 6,
+      "images": 1
+    },
+    {
+      "slide": 15,
+      "objects": 10,
+      "images": 2
+    },
+    {
+      "slide": 16,
+      "objects": 7,
+      "images": 2
+    },
+    {
+      "slide": 17,
+      "objects": 6,
+      "images": 0
+    },
+    {
+      "slide": 18,
+      "objects": 8,
+      "images": 0
+    },
+    {
+      "slide": 19,
+      "objects": 16,
+      "images": 0
+    },
+    {
+      "slide": 20,
+      "objects": 5,
+      "images": 0
+    },
+    {
+      "slide": 21,
+      "objects": 7,
+      "images": 0
+    },
+    {
+      "slide": 22,
+      "objects": 7,
+      "images": 1
+    },
+    {
+      "slide": 23,
+      "objects": 7,
+      "images": 1
+    },
+    {
+      "slide": 24,
+      "objects": 17,
+      "images": 0
+    },
+    {
+      "slide": 25,
+      "objects": 7,
+      "images": 1
+    },
+    {
+      "slide": 26,
+      "objects": 5,
+      "images": 0
+    },
+    {
+      "slide": 27,
+      "objects": 55,
+      "images": 0
+    },
+    {
+      "slide": 28,
+      "objects": 5,
+      "images": 0
+    },
+    {
+      "slide": 29,
+      "objects": 5,
+      "images": 0
+    },
+    {
+      "slide": 30,
+      "objects": 6,
+      "images": 1
+    },
+    {
+      "slide": 31,
+      "objects": 5,
+      "images": 0
+    }
+  ],
+  "overflow": [],
+  "native_texts": 239,
+  "native_charts": 6,
+  "native_tables": 4,
+  "full_slide_rasterization": false
+}

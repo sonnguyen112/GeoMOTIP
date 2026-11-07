@@ -1,0 +1,138 @@
+{
+  "updated_utc": "2026-11-06T14:28:00.684676+00:00",
+  "change": "User cancelled MOT17 training; use verified existing DanceTrack experiments only. No new training started.",
+  "dataset": "DanceTrack",
+  "train_total_frames": 41796,
+  "train_budgets": {
+    "5": 2090,
+    "10": 4179,
+    "15": 6265
+  },
+  "evaluation_frames": 25508,
+  "evaluation_sequences": 25,
+  "primary_result": "Three-seed selected-best by small-validation AssA, then evaluated on full validation",
+  "selection_frames": 3894,
+  "selection_caveat": "Small checkpoint-selection validation is contained in full validation; the latter is NOT an untouched test set.",
+  "seeds": [
+    42,
+    123,
+    3407
+  ],
+  "epochs": 10,
+  "std_ddof": 1,
+  "source_metrics": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/selected_best_fullval_metrics_all_seeds.csv",
+  "verified_summaries": [
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p5/e0/train/eval_during_train/epoch_8/tracker/pedestrian_summary.txt",
+      "sha256": "2d1912b707d03b40c33b97418f239722ac0661dc974c507f141cb87bbc12404e",
+      "local_copy": "sources/artifacts/p5_s42_e0_epoch8_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p5/v3_gtlinked_compare10/train/eval_during_train/epoch_6/tracker/pedestrian_summary.txt",
+      "sha256": "6490ef029f1583f1755a455935bd580e6627535daa31ce3fecc32521a687839f",
+      "local_copy": "sources/artifacts/p5_s42_v3_gtlinked_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p5/s123/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_9/tracker/pedestrian_summary.txt",
+      "sha256": "f977f8e061c96d3f751da4a6e5d15b3ad969b30c8d05474bb8f43a50fe38902b",
+      "local_copy": "sources/artifacts/p5_s123_e0_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p5/s123/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_9/tracker/pedestrian_summary.txt",
+      "sha256": "da44538254dec85de2b15301a1e01562afbaadc66aedc0ea66fbc47ae98f3755",
+      "local_copy": "sources/artifacts/p5_s123_v3_gtlinked_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p5/s3407/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_9/tracker/pedestrian_summary.txt",
+      "sha256": "ce70a5ec6b553f77d839b904ca9383621289062d6d927b466f97614046d98e11",
+      "local_copy": "sources/artifacts/p5_s3407_e0_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p5/s3407/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_6/tracker/pedestrian_summary.txt",
+      "sha256": "080187672d15ef8b053028b141764fe38758d7953a5d7b97c2c2ee93e10a4b87",
+      "local_copy": "sources/artifacts/p5_s3407_v3_gtlinked_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p10/e0/train/eval_during_train/epoch_6/tracker/pedestrian_summary.txt",
+      "sha256": "a31a181d273d3a546ad4383ef5e9c3177310a60b6b66d4d9b4db08c5f4da5f72",
+      "local_copy": "sources/artifacts/p10_s42_e0_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p10/v3_gtlinked/train/eval_during_train/epoch_6/tracker/pedestrian_summary.txt",
+      "sha256": "1253a17423bfcdd464d52927b9e239a3533a024898dcaec9900a963911dd162d",
+      "local_copy": "sources/artifacts/p10_s42_v3_gtlinked_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p10/s123/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_9/tracker/pedestrian_summary.txt",
+      "sha256": "fec2ac4eea157d59c1ded5b52384215abbab899ec78c0534ba6a8b15f18ae346",
+      "local_copy": "sources/artifacts/p10_s123_e0_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p10/s123/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_8/tracker/pedestrian_summary.txt",
+      "sha256": "6fcda0e9023dbfca923c142433cf81bb0d2b9f985036fa55ddac63ee57ba3ea5",
+      "local_copy": "sources/artifacts/p10_s123_v3_gtlinked_epoch8_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p10/s3407/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_8/tracker/pedestrian_summary.txt",
+      "sha256": "4aaed3bea2eb51febfa067dce9e684d2e1469a4a9e08ac1631a6bd40348c7c07",
+      "local_copy": "sources/artifacts/p10_s3407_e0_epoch8_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p10/s3407/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_9/tracker/pedestrian_summary.txt",
+      "sha256": "a8589eb4fcf636ebe35f715c2c6a96920c1f5ada7268f1f436e58ce32f540797",
+      "local_copy": "sources/artifacts/p10_s3407_v3_gtlinked_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p15/e0/train/eval_during_train/epoch_6/tracker/pedestrian_summary.txt",
+      "sha256": "7cbe3879f7985e8568fcb2d71e57993a3bb3135f960d043f5b49e94826b0248e",
+      "local_copy": "sources/artifacts/p15_s42_e0_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p15/v3_gtlinked/train/eval_during_train/epoch_9/tracker/pedestrian_summary.txt",
+      "sha256": "3ccdd6e0602578165aaf6e1f8f7a93a0796fa6986c30eff78fcb6e1fe540cb49",
+      "local_copy": "sources/artifacts/p15_s42_v3_gtlinked_epoch9_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p15/s123/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_8/tracker/pedestrian_summary.txt",
+      "sha256": "312937a1c1954d031316f7221a470a0414081ed30b66142b2bab0546645d5139",
+      "local_copy": "sources/artifacts/p15_s123_e0_epoch8_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p15/s123/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_4/tracker/pedestrian_summary.txt",
+      "sha256": "4264de4a9d613fe010b3c97e984ec55f396d61b231e78cb8ff447b013ee0588a",
+      "local_copy": "sources/artifacts/p15_s123_v3_gtlinked_epoch4_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p15/s3407/e0/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_6/tracker/pedestrian_summary.txt",
+      "sha256": "a91bfd2f40e4beea8d7f21a1596da9bf14bf63cc68024d236f59a2ffee2253dd",
+      "local_copy": "sources/artifacts/p15_s3407_e0_epoch6_summary.txt"
+    },
+    {
+      "source": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_multiseed/runs/p15/s3407/v3_gtlinked/full_validation_best/evaluate/best_by_small_val/DanceTrack/val/checkpoint_8/tracker/pedestrian_summary.txt",
+      "sha256": "e10d07236a041fb9208de52c271f9663e63042b900717f7e472bc193ef2d4045",
+      "local_copy": "sources/artifacts/p15_s3407_v3_gtlinked_epoch8_summary.txt"
+    }
+  ],
+  "demo_checkpoints": {
+    "e0": {
+      "path": "/home/sonnguyen112/data/Trail-MOT/MOTIP_CV_Course_Project/checkpoints/e0_15pct_epoch6.pth",
+      "sha256": "baea1bf61f537a8d3d7fe7c7a4507f720a0ccd53647e8f17cb38a35cd14d5776",
+      "original": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p15/e0/checkpoint_6.pth",
+      "epoch": 6,
+      "selection": "Highest AssA on the locked 3,894-frame small validation; NOT highest full-val metric"
+    },
+    "v3": {
+      "path": "/home/sonnguyen112/data/Trail-MOT/MOTIP_CV_Course_Project/checkpoints/v3_15pct_epoch9.pth",
+      "sha256": "5ecf3893fc4f1d5a78f1f7adbff0d2a9c696469f0e7db13aa7d97b12e87eabb7",
+      "original": "/home/sonnguyen112/data/Trail-MOT/MOTIP/outputs/research_data_efficiency/percent_5_10_15_s42/runs/p15/v3_gtlinked/checkpoint_9.pth",
+      "epoch": 9,
+      "selection": "Highest AssA on the locked 3,894-frame small validation; NOT highest full-val metric"
+    }
+  },
+  "demo_sequence": "dancetrack0004",
+  "demo_selection": "First sequence lexicographically in validation, not chosen for performance",
+  "improvements": "Candidate-wise G4 geometry, 66D exact lags 1/2/4/8, 25,217-parameter MLP, train-only GT-linked predicted-box pretraining; Tb=2,Tg=0.5,lambda=1",
+  "excluded": "Old 2,088-frame and 9,547-frame legacy geometry studies and NEW-omitting candidate probes are not evidence for this course report",
+  "cancelled_mot17": "Unused downloaded material retained locally, excluded from submission package",
+  "no_new_training": true
+}

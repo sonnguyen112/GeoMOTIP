@@ -1,0 +1,15 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/geometry_v3_a_4060ti.yaml
+OUTPUTS_DIR: outputs/research_v3/tracker/v3_a_offline_init_eval
+EXP_NAME: trail_motip_v3_a_offline_init_eval
+DATASET_SPLITS: [val]
+TRAIN_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_train_manifest.txt
+INFERENCE_SEQUENCE_MANIFEST: ./configs/trail_v3/probe_val_manifest.txt
+INFERENCE_DATASET: DanceTrack
+INFERENCE_SPLIT: val
+INFERENCE_MODE: evaluate
+INFERENCE_DTYPE: FP32
+USE_GEOMETRY: true
+FREEZE_MOTIP: true
+GEOMETRY_FIXED_LAMBDA: 0.01
+GEOMETRY_INPUT_STATS_PATH: outputs/research_v3/geometry_probe/geometry_probe_models.pt
+GEOMETRY_INPUT_CLIP: 8.0

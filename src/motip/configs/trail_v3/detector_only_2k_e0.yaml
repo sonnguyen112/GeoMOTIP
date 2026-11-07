@@ -1,0 +1,4 @@
+SUPER_CONFIG_PATH: ./configs/trail_v3/detector_only_2k_common.yaml
+USE_GEOMETRY: false
+OUTPUTS_DIR: outputs/research_data_efficiency/detector_only_2k_s42/e0
+EXP_NAME: data_efficiency_detector_only_2k_e0_s42

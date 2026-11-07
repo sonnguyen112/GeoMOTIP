@@ -1,0 +1,50 @@
+% One-column adaptation of kourgeorge/arxiv-style (MIT); see template/License.txt.
+% Compile with XeLaTeX; do not enable shell escape.
+\documentclass[11pt,a4paper]{article}
+\usepackage{template/arxiv}
+\geometry{a4paper}
+\usepackage{fix-cm}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}
+\setmonofont[Scale=.82]{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,booktabs,tabularx,array}
+\usepackage[section]{placeins}
+\usepackage{microtype}
+\usepackage{xcolor}
+\definecolor{ink}{HTML}{15304C}
+\definecolor{teal}{HTML}{007E78}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\usepackage{url}
+\usepackage[unicode,colorlinks=true,linkcolor=ink,citecolor=teal,urlcolor=teal,
+ pdfauthor={Nguyễn Hồ Trường Sơn},
+ pdftitle={Bổ sung hình học quỹ đạo đa độ trễ cho dự đoán định danh trong theo dõi đa đối tượng},
+ pdfsubject={Đồ án Thị giác máy tính; tái hiện MOTIP và đánh giá trên DanceTrack}]{hyperref}
+\AtBeginDocument{\newgeometry{left=24mm,right=24mm,top=23mm,bottom=23mm,headheight=14pt,headsep=14pt,footskip=22pt}}
+\makeatletter
+\renewcommand\normalsize{\@setfontsize\normalsize{11}{14.3}\abovedisplayskip=9pt\belowdisplayskip=9pt}
+\makeatother
+\normalsize
+\renewcommand{\headeright}{}
+\renewcommand{\shorttitle}{\small MOTIP và hình học quỹ đạo đa độ trễ}
+\renewcommand{\undertitle}{Tái hiện MOTIP và đánh giá thực nghiệm trên DanceTrack}
+\renewenvironment{abstract}{\begin{center}\bfseries Tóm tắt\end{center}\begin{quote}\small}{\end{quote}}
+\renewcommand{\refname}{Tài liệu tham khảo}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\appendixname}{Phụ lục}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+\title{Bổ sung hình học quỹ đạo đa độ trễ\\cho dự đoán định danh trong theo dõi đa đối tượng}
+\author{Nguyễn Hồ Trường Sơn\\
+Mã số học viên: 25C01020\\
+Đồ án cuối kỳ môn Thị giác máy tính\\
+Giảng viên: TS. Trương Phước Hưng}
+\date{}
+\begin{document}
+\maketitle
+\input{content}
+\end{document}
