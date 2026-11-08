@@ -12,12 +12,12 @@
     },
     {
       "slide": 3,
-      "objects": 9,
+      "objects": 5,
       "images": 1
     },
     {
       "slide": 4,
-      "objects": 5,
+      "objects": 9,
       "images": 1
     },
     {
@@ -107,12 +107,12 @@
     },
     {
       "slide": 22,
-      "objects": 7,
+      "objects": 14,
       "images": 1
     },
     {
       "slide": 23,
-      "objects": 7,
+      "objects": 14,
       "images": 1
     },
     {
@@ -157,7 +157,7 @@
     }
   ],
   "overflow": [],
-  "native_texts": 239,
+  "native_texts": 251,
   "native_charts": 6,
   "native_tables": 4,
   "full_slide_rasterization": false

@@ -4,28 +4,28 @@
     "title": "MOTIP: từ phát hiện đến duy trì danh tính",
     "seconds": 20,
     "backup": false,
-    "notes": "Em trình bày bài báo Multiple Object Tracking as ID Prediction của Gao và cộng sự, công bố tại CVPR 2025. Đồ án dựa trên mã nguồn tác giả, tái hiện pipeline và đánh giá thêm một nhánh hình học nhỏ. Phần thực nghiệm là các run đã huấn luyện và được đối chiếu artifact, không phải số liệu lấy từ bảng SOTA. Em sẽ đi từ bài toán, cách MOTIP dự đoán ID, phần bổ sung geometry, rồi đến thiết kế và kết quả thực nghiệm."
+    "notes": "Em trình bày bài báo Multiple Object Tracking as ID Prediction của Gao và cộng sự, công bố tại CVPR 2025. Đồ án dựa trên mã nguồn tác giả, tái hiện pipeline và đánh giá thêm một nhánh hình học nhỏ. Phần thực nghiệm là các run đã huấn luyện và được đối chiếu artifact, không phải số liệu lấy từ bảng SOTA. Em sẽ đi từ bài toán, đầu vào và đầu ra, cách MOTIP liên kết đối tượng, phần bổ sung hình học, rồi đến thiết kế và kết quả thực nghiệm."
   },
   {
     "number": 2,
     "title": "Phát hiện đúng người chưa đảm bảo đúng ID",
     "seconds": 35,
     "backup": false,
-    "notes": "Mỗi frame có thể phát hiện đúng tất cả người, nhưng khi hai người đi ngang qua nhau thì tracker vẫn có thể đổi danh tính. Vì vậy phát hiện và liên kết là hai vấn đề khác nhau. Ví dụ một ID ban đầu theo người A rồi chuyển sang người B là lỗi ID switch. Đầu vào là video, đầu ra là các hộp và ID qua thời gian. Thử thách chính của DanceTrack là ngoại hình tương tự, chuyển động thay đổi và che khuất. Các ID ở đây là định danh tạm cho quỹ đạo, không phải nhận dạng cá nhân."
+    "notes": "Mỗi frame có thể phát hiện đúng tất cả người, nhưng khi hai người đi ngang qua nhau thì tracker vẫn có thể đổi danh tính. Vì vậy phát hiện và liên kết là hai vấn đề khác nhau. Ví dụ một ID ban đầu theo người A rồi chuyển sang người B là lỗi ID switch. Trên hình, nhãn ID 0 được giữ trên cùng một quỹ đạo ở ba thời điểm; đây là ID do tracker gán, không phải nhãn danh tính thật. Thử thách chính của DanceTrack là ngoại hình tương tự, chuyển động thay đổi và che khuất. Các ID ở đây là định danh tạm cho quỹ đạo, không phải nhận dạng cá nhân."
   },
   {
     "number": 3,
+    "title": "Đầu vào là video; đầu ra là hộp và ID theo thời gian",
+    "seconds": 60,
+    "backup": false,
+    "notes": "Đầu vào là một chuỗi frame của video. Ở mỗi frame, detector tìm các đối tượng và tạo hộp cùng đặc trưng; MOTIP dùng lịch sử các track để gán ID cho từng phát hiện. Đầu ra là các hộp kèm ID ổn định qua thời gian, tức các quỹ đạo đã được liên kết. Hình tổng quan cho thấy vòng xử lý: phát hiện, dự đoán ID từ lịch sử, rồi ghi quan sát mới sau quyết định. Nhãn ID 0 trong ví dụ đầu ra là ID do tracker dự đoán, không phải nhãn GT. Một ID biểu thị cùng một đối tượng trong video, không phải danh tính cá nhân ngoài đời. Phần hình học được bổ sung ở các slide sau, tại bước chấm mức phù hợp giữa phát hiện và track ứng viên."
+  },
+  {
+    "number": 4,
     "title": "DanceTrack tách độ khó liên kết khỏi ngoại hình",
     "seconds": 40,
     "backup": false,
     "notes": "DanceTrack được thiết kế để làm liên kết khó hơn so với tình huống chỉ cần phân biệt áo quần. Workspace có 40 sequence train với 41.796 frame và 25 sequence validation với 25.508 frame. Đồ án dùng full validation cho các bảng đánh giá. Ba ngân sách train là các subset nguyên sequence, không lấy frame rời rạc. Do đây là validation và có một tập con dùng chọn checkpoint, em không coi kết quả là test độc lập hay đối chiếu trực tiếp với bảng test của paper."
-  },
-  {
-    "number": 4,
-    "title": "MOTIP dự đoán ID từ ngữ cảnh đã có nhãn",
-    "seconds": 60,
-    "backup": false,
-    "notes": "Đây là hình tổng quan của MOTIP. Detector tạo đặc trưng cùng hộp. Lịch sử được lưu với ID cục bộ. Decoder nhận phát hiện chưa biết ID và truy vấn lịch sử để dự đoán ID tương ứng. Sau khi gán ID thì quan sát mới được ghi lại cho frame tiếp theo. Điểm quan trọng là vòng phản hồi: một quyết định sai có thể đi vào lịch sử và ảnh hưởng các quyết định sau. Hình này mô tả MOTIP nền; phần geometry sẽ được thêm ở mức logit sau, không thay detector hay ID Decoder."
   },
   {
     "number": 5,
@@ -155,7 +155,7 @@
   },
   {
     "number": 23,
-    "title": "G4 giữ ID trong vùng chồng lấn",
+    "title": "G4 duy trì ID khi chồng lấn",
     "seconds": 40,
     "backup": false,
     "video_after": true,

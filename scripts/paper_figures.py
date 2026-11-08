@@ -66,7 +66,7 @@ def record(model='e0',frame=461):
     return json.loads((ROOT/f'demo/inference_crowded/{model}/predictions.json').read_text())[frame-1]
 
 
-def draw_tracks(ax,model,extent,frame=461,roi=None,labels=True,labelsize=5.9):
+def draw_tracks(ax,model,extent,frame=461,roi=None,labels=True,labelsize=5.9,label_filter=None,id_prefix=False):
     im=np.asarray(Image.open(ROOT/f'data/DanceTrack/val/dancetrack0034/img1/{frame:08d}.jpg'))
     ax.imshow(im,extent=extent,aspect='auto')
     x0,x1,y0,y1=extent
@@ -75,7 +75,9 @@ def draw_tracks(ax,model,extent,frame=461,roi=None,labels=True,labelsize=5.9):
         xx=x0+x/1920*(x1-x0);yy=y1-y/1080*(y1-y0)
         ww=w/1920*(x1-x0);hh=h/1080*(y1-y0)
         ax.add_patch(Rectangle((xx,yy-hh),ww,hh,fill=False,lw=.9,edgecolor=c))
-        if labels:text(ax,xx,yy,f'{identity}',labelsize,INK,weight='bold',ha='left',va='bottom',clip_on=True,bbox=dict(facecolor='white',edgecolor='none',alpha=.92,pad=.3))
+        if labels and (label_filter is None or identity in label_filter):
+            label=f'ID {identity}' if id_prefix else f'{identity}'
+            text(ax,xx,yy,label,labelsize,INK,weight='bold',ha='left',va='bottom',clip_on=True,bbox=dict(facecolor='white',edgecolor='none',alpha=.92,pad=.3))
 
 
 def pipeline():
@@ -113,7 +115,7 @@ def pipeline():
     module(ax,(13.65,4.85),2.55,.62,'object-max','',BASE,PALE,9)
     text(ax,14.9,4.42,'Gán slot / xử lý NEW',8.5)
     arrow(ax,[(16.27,5.16),(16.65,5.16),(16.65,6.45),(16.99,6.45)])
-    draw_tracks(ax,'e0',(17.05,20.15,5.55,7.30),labels=False)
+    draw_tracks(ax,'e0',(17.05,20.15,5.55,7.30),labels=True,labelsize=7,label_filter={0},id_prefix=True)
     text(ax,18.6,5.0,'Hộp dự đoán\n+ ID toàn cục',8.4,weight='bold')
     text(ax,.05,3.85,'(b) Ngữ cảnh đã có ID',10.5,weight='bold',ha='left')
     # Abstract memory bank, not a measured attention or confidence matrix.
@@ -301,6 +303,9 @@ def observation_assets():
         ax.imshow(im)
         for ident,(x,y,w,h) in zip(record(frame=frame)['ids'],record(frame=frame)['boxes']):
             c=plt.get_cmap('tab10')(ident%10);ax.add_patch(Rectangle((x,y),w,h,fill=False,edgecolor=c,lw=1.2))
+            if ident == 0:
+                ax.text(x,y-10,f'ID {ident}',fontsize=9,color='white',ha='left',va='bottom',
+                        bbox=dict(facecolor=c,edgecolor='white',linewidth=.35,pad=1.1),clip_on=True,zorder=5)
         ax.set_title(lab,fontsize=15,color=INK);ax.axis('off')
     save(fig,'association_filmstrip')
 

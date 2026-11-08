@@ -155,6 +155,8 @@ def np_linspace(lo,hi,n):return [lo+(hi-lo)*i/(n-1) for i in range(n)]
 def main():
     OUT.mkdir(parents=True,exist_ok=True)
     notes=json.loads((ROOT/'presentation/slide_structure.json').read_text())
+    # Speaker notes are stored in the same narrative order as the slide calls below.
+    for number,row in enumerate(notes,1):row['number']=number
     rows=list(csv.DictReader((ROOT/'experiments/metrics_all_seeds.csv').open()))
     summary=json.loads((ROOT/'experiments/presentation_summary.json').read_text())
     stats={(r['budget'],r['model']):r for r in summary['stats']}
@@ -171,11 +173,11 @@ def main():
         scenes.append(f'<section class="slide {"dark" if dark else ""}" id="slide-{n}" data-notes="{html.escape(notes[n-1]["notes"],quote=True)}">{head}{body}{foot}</section>')
     slide('MOTIP: từ phát hiện\nđến duy trì danh tính','Tái hiện paper CVPR 2025 và bổ sung hình học quỹ đạo đa độ trễ',
       img('figures/dataset_sample.jpg',640,315,920,518)+t(82,335,540,200,'Vị trí đúng\nchưa đủ.',66,'white',True)+t(82,594,510,114,'Cần giữ đúng người\nqua thời gian.',38,'#CFEDE8')+t(82,754,540,65,'Giảng viên: TS. Trương Phước Hưng',24,'#CCDDEB'),True)
-    slide('Phát hiện đúng người chưa đảm bảo đúng ID','Ngoại hình tương tự, giao cắt và che khuất làm liên kết trở nên khó.',
+    slide('Phát hiện đúng người chưa đảm bảo đúng ID','Các nhãn ID phải đi theo cùng một người xuyên suốt video.',
       img('figures/association_filmstrip.png',55,255,1490,415)+t(120,695,640,75,'Phát hiện: người ở đâu?',36,BLUE,True)+t(870,695,640,75,'Liên kết: ai là ai?',36,TEAL,True))
+    slide('Đầu vào là video; đầu ra là hộp và ID theo thời gian','Mỗi frame nhận các hộp phát hiện; tracker gán ID để nối cùng đối tượng qua các frame.',img('figures/pipeline.png',60,258,1480,565))
     slide('DanceTrack tách độ khó liên kết khỏi ngoại hình','Dữ liệu video người múa/nhảy; trang phục giống nhau và chuyển động đa dạng.',
       img('figures/dataset_sample.jpg',80,280,1000,530)+t(1160,300,360,84,'41.796',66,BLUE,True)+t(1160,385,360,80,'frame train\n40 sequence',30)+t(1160,550,360,84,'25.508',66,TEAL,True)+t(1160,635,360,100,'frame validation\n25 sequence',30))
-    slide('MOTIP dự đoán ID từ ngữ cảnh đã có nhãn','Lịch sử được đọc trước; chỉ ghi quan sát mới sau quyết định ID.',img('figures/pipeline.png',60,258,1480,565))
     slide('Detector tạo hộp, confidence và đặc trưng','Cùng một detector tiền huấn luyện đóng băng trong các cấu hình được đối chiếu.',
       img('figures/detector_observation.png',80,280,865,490)+t(1010,320,510,128,'Deformable DETR\nResNet-50',43,INK,True)+t(1010,505,510,130,'Tọa độ hộp chuẩn hóa\nĐặc trưng query 256 chiều',31)+formula('detection',955,690,585,95))
     slide('Lịch sử được tổ chức theo track và thời gian','Padding và quan sát thiếu phải bị loại khỏi attention và loss.',
@@ -256,10 +258,22 @@ def main():
     spec=dict(kind='bar',title='ΔAssA (MOTIP + G4 − MOTIP nền)',categories=['5%','10%','15%'],names=['Seed 42','Seed 123','Seed 3407'],colors=[BLUE,TEAL,CORAL],values=ds)
     slide('Cả chín cặp seed/ngân sách đều cải thiện AssA','Ba seed hỗ trợ nhận xét nhất quán, chưa phải bằng chứng thống kê dứt khoát.',chart(spec,140,265,1320,530))
     slide('ID switch giảm, chi phí tính toán vẫn có','Đọc IDSW cùng AssA/IDF1; không đồng nhất FPS phát video với FPS suy luận.',chart(result_spec('IDSW'),80,280,700,480)+chart(result_spec('DetA'),830,280,690,480)+t(100,790,1400,35,'Thêm 25.217 tham số; FPS seed 42 trên cùng máy giảm khoảng 5–6%.',25,MUTED,align='center'))
-    slide('G4 giữ ID khi các đối tượng giao cắt','dancetrack0004 · đối tượng GT 2 · checkpoint seed 42, train 15%.',
-      img('figures/association_slide_case_1.png',75,260,1450,495)+t(100,770,1400,50,'MOTIP nền: ID 0 → 2     |     MOTIP + G4: giữ ID 0',32,TEAL,True,'center')+t(100,820,1400,25,'Ví dụ chọn có chủ đích; GT chỉ dùng kiểm chứng hậu nghiệm. Đường trắng: GT, đường xanh: dự đoán.',20,MUTED,align='center'))
-    slide('G4 giữ ID trong vùng chồng lấn','dancetrack0034 · đối tượng GT 8 · cùng trang phục, vị trí gần nhau.',
-      img('figures/association_slide_case_2.png',75,260,1450,495)+t(100,770,1400,50,'MOTIP nền: ID 387 → 442     |     MOTIP + G4: giữ ID 6',32,TEAL,True,'center')+t(100,820,1400,25,'Ví dụ chọn có chủ đích, không đại diện mọi trường hợp. Video demo tổng quát: 45 giây.',20,MUTED,align='center'))
+    slide('G4 giữ ID khi các đối tượng giao cắt','Đối chiếu toàn bộ hình minh họa như trong báo cáo; không cắt riêng đối tượng.',
+      img('figures/association_case_1_slide.jpg',50,260,850,565)+shape(940,255,600,565,LIGHT,22)+
+      t(980,290,520,55,'Tình huống 1',32,TEAL,True)+
+      t(980,355,520,80,'Giao cắt · GT 2\nDanceTrack 0004',27,MUTED)+
+      t(980,455,520,45,'Frame 53 · 56 · 57 · 61',25,INK,True)+
+      t(980,525,520,45,'MOTIP nền',25,BLUE,True)+t(980,565,520,70,'ID 0 → 2',42,CORAL,True)+
+      t(980,645,520,45,'MOTIP + G4',25,TEAL,True)+t(980,685,520,70,'giữ ID 0',42,TEAL,True)+
+      t(980,765,520,42,'GT chỉ dùng kiểm chứng hậu nghiệm.',22,MUTED))
+    slide('G4 duy trì ID khi chồng lấn','Đối chiếu toàn bộ hình minh họa như trong báo cáo; không cắt riêng đối tượng.',
+      img('figures/association_case_2_slide.jpg',50,260,850,565)+shape(940,255,600,565,LIGHT,22)+
+      t(980,290,520,55,'Tình huống 2',32,TEAL,True)+
+      t(980,355,520,80,'Chồng lấn · GT 8\nDanceTrack 0034',27,MUTED)+
+      t(980,455,520,45,'Frame 737 · 740 · 741 · 745',24,INK,True)+
+      t(980,525,520,45,'MOTIP nền',25,BLUE,True)+t(980,565,520,70,'ID 387 → 442',42,CORAL,True)+
+      t(980,645,520,45,'MOTIP + G4',25,TEAL,True)+t(980,685,520,70,'giữ ID 6',42,TEAL,True)+
+      t(980,765,520,42,'GT chỉ dùng kiểm chứng hậu nghiệm.',22,MUTED))
     slide('Bằng chứng tích cực nhưng kết luận có phạm vi','Không đồng nhất validation trên subset với ưu thế phổ quát ở full-data/test.',
       shape(80,275,690,450,'#EAF5F3',24)+shape(830,275,690,450,'#FBF0EE',24)+
       t(125,315,600,65,'Đã quan sát',44,TEAL,True)+
